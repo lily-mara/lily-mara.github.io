@@ -165,6 +165,7 @@ a:hover {
 
 /* Buttons
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*
 .button,
 button,
 input[type="submit"],
@@ -221,6 +222,7 @@ input[type="button"].button-primary:focus {
   color: #FFF;
   background-color: #1EAEDB;
   border-color: #1EAEDB; }
+*/
 
 
 /* Forms
@@ -337,9 +339,11 @@ td:last-child {
 
 /* Spacing
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*
 button,
 .button {
   margin-bottom: 1rem; }
+*/
 input,
 textarea,
 select,
