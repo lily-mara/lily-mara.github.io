@@ -1,0 +1,16 @@
+baseURL = 'https://lilymara.xyz/'
+languageCode = 'en-us'
+title = "lily's thots"
+theme = "archie"
+copyright = "© Lily Mara"
+
+[params]
+customcss = ["css/pink.css"]
+
+[[menu.main]]
+name = "Buy my Book!"
+url = "https://www.manning.com/books/refactoring-to-rust?utm_source=mara&utm_medium=affiliate&utm_campaign=book_mara_refactoring_1_6_21&a_aid=mara&a_bid=eedce54d"
+weight = 5
+
+[markup.goldmark.renderer]
+unsafe = true

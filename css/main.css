@@ -1,7 +1,0 @@
-.social-list {
-    list-style: none;
-}
-
-.social-list li::before {
-  content: '💖 ';
-}
