@@ -14,3 +14,33 @@ weight = 5
 
 [markup.goldmark.renderer]
 unsafe = true
+
+[[params.social]]
+name = "Youtube"
+icon = "youtube"
+url = "https://www.youtube.com/@lily-mara"
+
+[[params.social]]
+name = "Mastodon"
+icon = "message-square"
+url = "https://xantronix.social/@lily"
+
+[[params.social]]
+name = "Email"
+icon = "at-sign"
+url = "mailto:lily@lilymara.xyz"
+
+[[params.social]]
+name = "Twitter"
+icon = "twitter"
+url = "https://twitter.com/TheLily_Mara"
+
+[[params.social]]
+name = "Github"
+icon = "github"
+url = "https://github.com/lily-mara"
+
+[[params.social]]
+name = "Linkedin"
+icon = "linkedin"
+url = "https://www.linkedin.com/in/lily-mara/"
