@@ -15,6 +15,7 @@ weight = 5
 [markup.goldmark.renderer]
 unsafe = true
 
+# Icons come from https://feathericons.com
 [[params.social]]
 name = "Youtube"
 icon = "youtube"
