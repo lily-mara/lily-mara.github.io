@@ -2,9 +2,20 @@
     border-radius: 1em;
     background-color: #eaf0fb;
     color: black;
+    margin-bottom: 1em;
+}
+
+.callout p {
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .callout-header {
+    font-weight: bold;
+    font-size: 110%;
+    font-family: 'Fira Sans', sans-serif;
+}
+
+.callout .callout-header {
     color: #3578f6;
 }
 
@@ -12,7 +23,7 @@
     background-color: #fcf2ea;
 }
 
-.callout-warning-header {
+.callout-warning .callout-header {
     color: #dd9b51;
 }
 
@@ -20,6 +31,6 @@
     background-color: #eef8ee;
 }
 
-.callout-success-header {
+.callout-success .callout-header {
     color: #6fcc78;
 }

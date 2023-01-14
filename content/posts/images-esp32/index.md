@@ -18,7 +18,7 @@ I figured the minimum interesting thing I could do would be to get the screen to
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">GOAL</div>
-        Turn the screen red
+        <p>Turn the screen red</p>
   </div>
 </div>
 
@@ -29,7 +29,7 @@ To start out, Espressif (makers of the ESP32 series of SoC) have put quite a bit
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">NOTE</div>
-I did all of this environment setup and all of the development on a macOS with an aarch64 processor. I cannot comment on the tools as they work in different environments, but I have to imagine that I'm using a low-priority platform for the maintainers of these tools so if they work for me then they should probably work for someone on a more conventional platform like linux on x64.
+<p>I did all of this environment setup and all of the development on macOS with an aarch64 processor. I cannot comment on the tools as they work in different environments, but I have to imagine that I'm using a low-priority platform for the maintainers of these tools. So if they work for me then they should probably work for someone on a more conventional platform like linux on x64.</p>
   </div>
 </div>
 
@@ -38,11 +38,11 @@ Let's begin by configuring a Rust toolchain for ESP32 development, and run a "He
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">GOAL</div>
-        Run 'Hello, World' on ESP32 hardware
+        <p>Run 'Hello, World' on ESP32 hardware</p>
   </div>
 </div>
 
-The first thing we're going to need is a Rust toolchain that can compile code for an ESP32 target. Espressif has helpfully made a tool very similar to rustup for managing precompiled binaries of their fork of rustc called [EspUp](https://github.com/esp-rs/espup#installation). We can install it then use it to install our toolchain with a few simple commands (you must already have `rustup` installed):
+The first thing we're going to need is a Rust toolchain that can compile code for an ESP32 target. Espressif has helpfully made a tool very similar to rustup for managing precompiled binaries of their fork of rustc called [EspUp](https://github.com/esp-rs/espup#installation). We can install it, then use it to install our toolchain with a few simple commands (you must already have `rustup` installed):
 
 ```bash
 $ cargo install espup
@@ -53,8 +53,8 @@ esp
 ```
 <div class="callout callout-warning">
 	<div class="callout-inner">
-        <div class="callout-warning-header">WARNING</div>
-The output of <code>espup install</code> includes environment variables that <em>must be set</em> in order for your development environment to work. Ensure that you follow these instructions carefully or your compiler toolchain <em>will not work</em>.
+        <div class="callout-header">WARNING</div>
+<p>The output of <code>espup install</code> includes environment variables that <em>must be set</em> in order for your development environment to work. Ensure that you follow these instructions carefully or your compiler toolchain <em>will not work</em>.</p>
   </div>
 </div>
 
@@ -74,12 +74,11 @@ Let's make ourselves a project to write our Rust code in. We could write this fr
 
 ```
 $ cargo generate https://github.com/esp-rs/esp-idf-template cargo
-🤷   Project Name: display-reddener
+🤷   Project Name: esp32-image-display
 ✔ 🤷   ESP-IDF native build version (v4.3.2 = previous stable, v4.4 = stable, mainline = UNSTABLE) · v4.4
 ✔ 🤷   STD support · true
 ✔ 🤷   MCU · esp32
-? 🤷   Configure project to use Dev Containers (VS Code, GitHub Codespaces and Gitpod)? (beware: Dev Containers not a
-✔ 🤷   Configure project to use Dev Containers (VS Code, GitHub Codespaces and Gitpod)? (beware: Dev Containers not available for esp-idf v4.3.2) · false
+✔ 🤷   Configure project to use Dev Containers? · false
 ```
 
 There are a lot of files created in this crate, but let's start by opening `src/main.rs`.
@@ -104,7 +103,7 @@ On my machine I am first prompted to chose which of two interfaces should be use
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">NOTE</div>
-        You do not <em>need</em> a Lilygo T-Display to follow along with these instructions, your Rust code should compile just fine if you don't have a board to flash, but these instructions assume you have a hardware board connected to your computer that can be flashed.
+        <p>You do not <em>need</em> a Lilygo T-Display to follow along with these instructions, your Rust code should compile just fine if you don't have a board to flash, but these instructions assume you have a hardware board connected to your computer that can be flashed.</p>
   </div>
 </div>
 
@@ -159,8 +158,8 @@ Hello, world!
 
 <div class="callout callout-success">
 	<div class="callout-inner">
-        <div class="callout-success-header">GOAL ACHIEVED!</div>
-        There it is! We got a "Hello, world!" back from our board with just the preconfigured project!
+        <div class="callout-header">GOAL ACHIEVED!</div>
+        <p>There it is! We got a "Hello, world!" back from our board with just the preconfigured project!</p>
   </div>
 </div>
 
@@ -562,8 +561,8 @@ note: required by a bound in `SPIInterfaceNoCS::<SPI, DC>::new`
     |         ^^^^^^^^^ required by this bound in `SPIInterfaceNoCS::<SPI, DC>::new`
 
 For more information about this error, try `rustc --explain E0277`.
-warning: `display-reddener` (bin "display-reddener") generated 1 warning
-error: could not compile `display-reddener` due to 5 previous errors; 1 warning emitted
+warning: `esp32-image-display` (bin "esp32-image-display") generated 1 warning
+error: could not compile `esp32-image-display` due to 5 previous errors; 1 warning emitted
 ```
 
 > me writing todo!: haha i'm so smart i can get away with anything
@@ -576,15 +575,15 @@ Let's start with the easiest one. It's simple enough to find a value to pass in 
 
 <div class="callout callout-warning">
 	<div class="callout-inner">
-        <div class="callout-warning-header">WARNING</div>
-The latest version of `esp-idf-hal` is `0.40.1`, but this is currently incompatible with the rest of the ecosystem as it depends on a beta version of `embedded-hal` that the rest of the ecosystem does not use yet. Use `0.39.4` instead.
+        <div class="callout-header">WARNING</div>
+<p>The latest version of <code>esp-idf-hal</code> is <code>0.40.1</code>, but this is currently incompatible with the rest of the ecosystem as it depends on a beta version of <code>embedded-hal</code> that the rest of the ecosystem does not use yet. Use <code>0.39.4</code> instead.</p>
   </div>
 </div>
 
 <div class="callout callout-warning">
 	<div class="callout-inner">
-        <div class="callout-warning-header">WARNING</div>
-`esp-idf-hal` does not have live documentation on docs.rs. They require their docs to be built with an espressif-compatible toolchain, which docs.rs is not liable to start including any time soon. You can get do their documentation by following the "documentation" link on crates.io (or even on docs.rs) but the standard docs.rs flow will not work for this crate.
+        <div class="callout-header">WARNING</div>
+<p><code>esp-idf-hal</code> does not have live documentation on docs.rs. They require their docs to be built with an espressif-compatible toolchain, which docs.rs is not liable to start including any time soon. You can get do their documentation by following the "documentation" link on crates.io (or even on docs.rs) but the standard docs.rs flow will not work for this crate.</p>
   </div>
 </div>
 
@@ -805,7 +804,7 @@ And let's try to run it
 ```
 ❯ cargo run
     Finished dev [optimized + debuginfo] target(s) in 0.35s
-     Running `espflash --monitor target/xtensa-esp32-espidf/debug/display-reddener`
+     Running `espflash --monitor target/xtensa-esp32-espidf/debug/esp32-image-display`
 New version of espflash is available: v2.0.0-rc.2
 
 Detected 2 serial ports. Ports which match a known common dev board are highlighted.
@@ -872,8 +871,8 @@ bl.set_high()?;
 
 <div class="callout callout-success">
 	<div class="callout-inner">
-        <div class="callout-success-header">GOAL ACHIEVED!</div>
-        And just like that, we did it! We got the display to turn red with about 50 lines of Rust code.
+        <div class="callout-header">GOAL ACHIEVED!</div>
+        <p>And just like that, we did it! We got the display to turn red with about 50 lines of Rust code.</p>
   </div>
 </div>
 
@@ -882,7 +881,7 @@ It took a bit of wrangling, but we got there. I figured that once I was able to 
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">GOAL</div>
-        Show a photo on the display
+        <p>Show a photo on the display</p>
   </div>
 </div>
 
@@ -921,8 +920,8 @@ And let's try to run this.
 
 <div class="callout callout-success">
 	<div class="callout-inner">
-        <div class="callout-success-header">GOAL ACHIEVED!</div>
-        We did it, we put an image on the screen!
+        <div class="callout-header">GOAL ACHIEVED!</div>
+        <p>We did it, we put an image on the screen!</p>
   </div>
 </div>
 
@@ -983,6 +982,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 ```
+
+The full project is also available on [github](https://github.com/lily-mara/esp32-image-display).
 
 In about 50 lines of Rust code, we've brought an image to life on this tiny little screen, and I think that's adorable.
 
