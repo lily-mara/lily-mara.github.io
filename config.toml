@@ -5,7 +5,7 @@ theme = "archie"
 copyright = "© Lily Mara"
 
 [params]
-customcss = ["css/pink.css", "css/callout.css"]
+customcss = ["css/pink.css", "css/callout.css", "css/copy.css"]
 mode = "light"
 
 [[menu.main]]
