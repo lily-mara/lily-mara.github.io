@@ -2,6 +2,7 @@
 title: "Displaying Images on ESP32 with Rust!"
 date: 2023-01-13T00:00:00-00:00
 tags: [rust, embedded]
+description: "Exploring the state of the embedded Rust ecosystem by displaying an image on an ESP32 board."
 ---
 
 I was recently inspired to get back into doing software stuff on microcontrollers, and I thought I'd start out by looking into the state of the [embedded Rust](https://github.com/rust-embedded/wg#embedded-devices-working-group) ecosystem. I wasn't sure exactly what I wanted to accomplish, but I had a few [Lilygo T-Display](https://www.lilygo.cc/products/lilygo%C2%AE-ttgo-t-display-1-14-inch-lcd-esp32-control-board?variant=42159376433333) microcontrollers. These are cheap ($8 each at time of writing) ESP32 boards with lots of gpio and an integrated 1.14" TFT display.
