@@ -5,7 +5,8 @@ theme = "archie"
 copyright = "© Lily Mara"
 
 [params]
-customcss = ["css/pink.css"]
+customcss = ["css/pink.css", "css/callout.css"]
+mode = "light"
 
 [[menu.main]]
 name = "Buy my Book!"

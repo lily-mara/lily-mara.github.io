@@ -1,0 +1,25 @@
+.callout {
+    border-radius: 1em;
+    background-color: #eaf0fb;
+    color: black;
+}
+
+.callout-header {
+    color: #3578f6;
+}
+
+.callout-warning {
+    background-color: #fcf2ea;
+}
+
+.callout-warning-header {
+    color: #dd9b51;
+}
+
+.callout-success {
+    background-color: #eef8ee;
+}
+
+.callout-success-header {
+    color: #6fcc78;
+}
