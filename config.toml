@@ -3,6 +3,7 @@ languageCode = 'en-us'
 title = "lily's thots"
 theme = "archie"
 copyright = "© Lily Mara"
+enableRobotsTXT = true
 
 [params]
 customcss = ["css/pink.css", "css/callout.css", "css/copy.css"]
