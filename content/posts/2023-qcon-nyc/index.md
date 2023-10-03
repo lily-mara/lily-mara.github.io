@@ -1,5 +1,5 @@
 ---
-title: "How to Build a Reliable Kafka Data Processing Pipeline, Focusing on Contention, Uptime and Latency"
+title: "How to Build a Reliable Kafka Data Processing Pipeline, Focusing on Contention, Uptime and Latency - QCon NYC"
 date: 2023-06-14T00:00:00-00:00
 tags: [talk]
 ---
