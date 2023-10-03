@@ -25,9 +25,9 @@ icon = "youtube"
 url = "https://www.youtube.com/@lily-mara"
 
 [[params.social]]
-name = "Mastodon"
-icon = "message-square"
-url = "https://xantronix.social/@lily"
+name = "RSS"
+icon = "rss"
+url = "/index.xml"
 
 [[params.social]]
 name = "Email"
