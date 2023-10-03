@@ -1,5 +1,5 @@
 ---
-title: "The Importance of Not Over-Optimizing in Rust"
+title: "The Importance of Not Over-Optimizing in Rust - RustConf"
 date: 2021-09-14T00:00:00-00:00
 tags: [talk]
 ---
