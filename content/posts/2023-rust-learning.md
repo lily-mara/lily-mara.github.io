@@ -26,6 +26,11 @@ professional Rust developer will need from hello world to a multithreaded web
 server from scratch. This book is freely available to anyone online via the link
 provided.
 
+## (paid) [Rust in Action](https://www.manning.com/books/rust-in-action)
+
+Tim McNamara's book walks you through building a CPU in Rust to teach
+intermediate programmers how to build real systems.
+
 ## (paid, biased) [Refactoring to Rust](https://www.manning.com/books/refactoring-to-rust)
 
 This book about incrementally adding Rust to new software projects was written
@@ -102,6 +107,11 @@ EuroRust, RustFest, and more!
 
 Amos has a youtube channel where he delves into some more advanced and
 interesting Rust topics.
+
+## [Tim McNamara](https://www.youtube.com/timClicks)
+
+Tim makes a _ton_ of Rust learning resources of various types. His youtube
+channel is a great resource if you like video content.
 
 ## [My Youtube Channel](https://www.youtube.com/@lily-mara)
 
