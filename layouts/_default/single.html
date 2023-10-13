@@ -1,0 +1,49 @@
+{{ define "main" }}
+<main>
+	<article>
+		<div class="title">
+			<h1 class="title">{{ .Title }}</h1>
+			<div class="meta">Posted on {{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT</span> {{ end }}</div>
+		</div>
+		{{ if isset .Params "tldr" }}
+		<div class="tldr">
+			<strong>tl;dr:</strong>
+			{{ .Params.tldr }}
+		</div>{{ end }}
+
+		<section class="body">
+			{{ .Content }}
+		</section>
+
+		<div class="post-tags">
+			{{ if ne .Type "page" }}
+			{{ if gt .Params.tags 0 }}
+			<nav class="nav tags">
+				<ul class="tags">
+					{{ range .Params.tags }}
+					<li><a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a></li>
+					{{ end }}
+				</ul>
+			</nav>
+			{{ end }}
+			{{ end }}
+		</div>
+	</article>
+</main>
+
+<hr>
+
+<!-- Comments by Cusdis -->
+<h1>Comments</h1>
+
+<div
+  id="cusdis_thread"
+  data-host="https://cusdis.com"
+  data-app-id="b723b7d5-0198-4bcb-bac2-2aa60f7f3154"
+  data-page-id="{{ .File.UniqueID }}"
+  data-page-url="{{ .Permalink }}"
+  data-page-title="{{ .Title }}"
+></div>
+<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+
+{{ end }}
