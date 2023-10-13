@@ -11,16 +11,30 @@ Just a list of sites that I think are cool.
 
 # Blogs
 
-- [Tracy Durnell's Blog](https://tracydurnell.com/) - long-running blogger about life and internet stuff
+## Tech
+
+- [Hazel Weakly](https://hazelweakly.me) - super smart, fellow speaker at QCon SF 2023, interesting thoughts & stories on tech industry
+- [Jeff Gearling](https://www.jeffgeerling.com) - self-hosting, homelab type stuf
+- [jwz](https://www.jwz.org/blog/) - owner of DNA lounge, blogs about tech in current and retro forms
 - [fLaMEd fury](https://flamedfury.com) - very long running blogger
 - [Devils](https://devils.neocities.org) - interesting personal site
-- [Clara Le](https://clarale.com) - blogger and media recommender, her blog titles didn't really peak my interest but her site in general and outgoing links seem super cool
 - [Kicks Condor](https://www.kickscondor.com) - seems a bit dormant but like projects they work on look cool and the GD on this site alone is worth a look
 - [Sadgrl](https://sadgrl.online/) - blog, no longer updated but seems cool
   - [Surf the web](https://sadgrl.online/cyberspace/surf-the-web)
 
+## Life
+
+- [Tracy Durnell's Blog](https://tracydurnell.com/) - long-running blogger about life and internet stuff
+- [Clara Le](https://clarale.com) - blogger and media recommender, her blog titles didn't really peak my interest but her site in general and outgoing links seem super cool
+
+## SF
+
+- [Broke-ass Stuart](https://brokeassstuart.com/) - SF-based independent blog
+- [Indiebay](https://www.indybay.org) - collective of SF media ppl
+
 # Archives
 
+- [Otherness Archive](https://othernessarchive.com/archive) - archive of trans-related videos
 - [Theo's Transgender Library](https://translibrary.carrd.co/) - archive of trans-related contents
 
 # Art
@@ -33,7 +47,7 @@ Just a list of sites that I think are cool.
 
 # Games
 
-- https://orb.farm - tend to an acquarium
+- [orb.farm](https://orb.farm) - tend to an acquarium
 - [Notcrying Nail Studio](https://notcrying.club/nailstudio/)
 
 # Media
