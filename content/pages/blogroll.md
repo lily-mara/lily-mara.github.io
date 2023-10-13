@@ -2,6 +2,7 @@
 title: "Blogroll"
 date: 2023-10-13T12:03:00-07:00
 draft: false
+description: "outgoing links to cool stuff"
 menu:
   main:
     weight: 10
