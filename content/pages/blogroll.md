@@ -14,6 +14,7 @@ Just a list of sites that I think are cool.
 
 ## Tech
 
+- [maia arson crimew](https://maia.crimew.gay) - the tiny gay cat that hacked an airline last year
 - [Hazel Weakly](https://hazelweakly.me) - super smart, fellow speaker at QCon SF 2023, interesting thoughts & stories on tech industry
 - [Jeff Gearling](https://www.jeffgeerling.com) - self-hosting, homelab type stuf
 - [jwz](https://www.jwz.org/blog/) - owner of DNA lounge, blogs about tech in current and retro forms
