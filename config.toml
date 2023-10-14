@@ -8,7 +8,7 @@ enableRobotsTXT = true
 [params]
 customcss = ["css/pink.css", "css/callout.css", "css/copy.css"]
 mode = "light"
-favicon = "favicon.png"
+favicon = "/favicon.png"
 
 [[menu.main]]
 name = "Buy my Book!"
