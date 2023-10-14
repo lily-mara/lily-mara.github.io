@@ -18,6 +18,11 @@
 </script>
 {{- end -}}
 
+<script>
+  // Only load on production environment.
+  if (window.location.host !== "lilymara.xyz")
+    window.goatcounter = { no_onload: true };
+</script>
 <script
   data-goatcounter="https://lilymaraxyz.lilys.hair/count"
   async
