@@ -43,13 +43,15 @@ Just a list of sites that I think are cool.
 
 - [Lynn Fisher](https://lynnandtonic.com) - makes CSS art and funny stuff
 
-# Tutorials
+# Tutorials/Technology
 
 - [Putting the "You" in CPU](https://cpu.land/)
+- [Mess with DNS](https://messwithdns.net)
+- [float.exposed](https://float.exposed) - explore the structure of floating point numbers
 
 # Games
 
-- [orb.farm](https://orb.farm) - tend to an acquarium
+- [orb.farm](https://orb.farm) - tend to an aquarium
 - [Notcrying Nail Studio](https://notcrying.club/nailstudio/)
 
 # Media
