@@ -23,6 +23,7 @@ Just a list of sites that I think are cool.
 - [Kicks Condor](https://www.kickscondor.com) - seems a bit dormant but like projects they work on look cool and the GD on this site alone is worth a look
 - [Sadgrl](https://sadgrl.online/) - blog, no longer updated but seems cool
   - [Surf the web](https://sadgrl.online/cyberspace/surf-the-web)
+- [Julia Evans](https://jvns.ca) - blogs about technology
 
 ## Life
 
@@ -48,6 +49,7 @@ Just a list of sites that I think are cool.
 - [Putting the "You" in CPU](https://cpu.land/)
 - [Mess with DNS](https://messwithdns.net)
 - [float.exposed](https://float.exposed) - explore the structure of floating point numbers
+- [Wizard Zines](https://wizardzines.com) - Julia Evans' zines about technology
 
 # Games
 
