@@ -1,5 +1,22 @@
+set positional-arguments
+
 dev :
     hugo serve -D
+
+post *args:
+    #!/usr/bin/env python3
+    from datetime import datetime
+    import os
+    import sys
+
+    prefix = 'posts/' + datetime.today().strftime('%Y')
+
+    slug = '-'.join(sys.argv[1:]).replace(' ', '-').lower()
+    filename = f'{prefix}-{slug}/index.md'
+
+    os.system(f'hugo new {filename}')
+    os.system(f'code content/{filename}')
+
 
 now :
     #!/usr/bin/env python3
