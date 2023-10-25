@@ -1,7 +1,7 @@
 ---
 title: "Displaying Images on ESP32 with Rust!"
 date: 2023-01-13T00:00:00-00:00
-tags: [rust, embedded]
+tags: [rust, embedded, project]
 description: "Exploring the state of the embedded Rust ecosystem by displaying an image on an ESP32 board."
 ---
 
@@ -14,7 +14,6 @@ This post is a mix of a tutorial for ESP32 development in Rust, as well as my fe
 I didn't know exactly what I wanted to do, but since these boards have a cute little display on them, I figured I should probably figure out how to drive that. I had done some C++ programming for these boards a few years ago, so I knew the displays could perform quite well under ideal circumstances and I wanted to see if I could achieve similar results with Rust.
 
 I figured the minimum interesting thing I could do would be to get the screen to turn a color of my choosing. I picked red.
-
 
 <div class="callout">
 	<div class="callout-inner">
@@ -52,6 +51,7 @@ $ rustup toolchain list
 stable-aarch64-apple-darwin (default)
 esp
 ```
+
 <div class="callout callout-warning">
 	<div class="callout-inner">
         <div class="callout-header">WARNING</div>
@@ -99,7 +99,6 @@ fn main() {
 Much like the template we get from `cargo new`, this file contains the "hello world" program. We should be able to test it out with the expected `cargo run` thanks to this template setting `target.xtensa-esp32-espidf.runner` to `espflash --monitor` in the `.cargo/config.toml` file. Because of this, `cargo run` gives us the normal Rust compilation output, followed by the result of feeding our binary to `cargo espflash`.
 
 On my machine I am first prompted to chose which of two interfaces should be used for flashing the program to my chip, these both point to the same chip and in my experience do not differ from each other.
-
 
 <div class="callout">
 	<div class="callout-inner">
@@ -155,7 +154,6 @@ I (317) cpu_start: Starting scheduler on PRO CPU.
 I (0) cpu_start: Starting scheduler on APP CPU.
 Hello, world!
 ```
-
 
 <div class="callout callout-success">
 	<div class="callout-inner">
@@ -991,8 +989,9 @@ In about 50 lines of Rust code, we've brought an image to life on this tiny litt
 This process has been quite condensed from the several days that it took me to put it together initially. It was trickier than I had imagined, and I learned a lot along the way. The ecosystem is still undeniably young but there's been great strides here since the last time I tried to do this. There is a lot to like about Rust on ESP-32 chips right now, and a few things that I think can be improved.
 
 # Good things in the ecosystem
+
 - It's nice that these libraries are so composable together, it means that maintainers can focus on the area of the stack that they're interested and competent in, rather than needing a graphics library to care about the difference between SPI and I2C
-- Largely speaking, the tools *just worked* for me, I didn't have to do any hand-tweaking to get stuff running, `espup`, `cargo-generate`, and `cargo-espflash` let me sail smoothly through setup and being able to use `cargo run` to do compilation/monitoring was amazing
+- Largely speaking, the tools _just worked_ for me, I didn't have to do any hand-tweaking to get stuff running, `espup`, `cargo-generate`, and `cargo-espflash` let me sail smoothly through setup and being able to use `cargo run` to do compilation/monitoring was amazing
 - Once I figured out some of the common idioms, it became quite straightforward to slot everything together - it was quite easy to go from "screen is red" to "image on screen"
 - The esp-rs Matrix room was generally helpful, it's good that there are community spaces for this niche
 
