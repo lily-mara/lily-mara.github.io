@@ -6,7 +6,12 @@ copyright = "© Lily Mara"
 enableRobotsTXT = true
 
 [params]
-customcss = ["css/pink.css", "css/callout.css", "css/copy.css"]
+customcss = [
+    "css/pink.css",
+    "css/callout.css",
+    "css/copy.css",
+    "css/reading-time.css",
+]
 mode = "light"
 favicon = "/favicon.png"
 
