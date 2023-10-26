@@ -43,6 +43,7 @@ Just a list of sites that I think are cool.
 # Art
 
 - [Lynn Fisher](https://lynnandtonic.com) - makes CSS art and funny stuff
+- [Neal.fun](https://neal.fun/) - makes fun web stuff
 
 # Tutorials/Technology
 
