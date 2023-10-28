@@ -11,6 +11,8 @@ customcss = [
     "css/callout.css",
     "css/copy.css",
     "css/reading-time.css",
+    "css/img.css",
+    "css/a.css",
 ]
 mode = "light"
 favicon = "/favicon.png"
@@ -27,6 +29,9 @@ weight = 15
 
 [markup.goldmark.renderer]
 unsafe = true
+
+[markup.goldmark.parser.attribute]
+block = true
 
 # Icons come from https://feathericons.com
 [[params.social]]

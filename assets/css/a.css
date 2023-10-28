@@ -1,0 +1,12 @@
+a:hover {
+    color: hotpink;
+    background-color: transparent;
+}
+
+a {
+    text-decoration: underline;
+    text-decoration-color: hotpink;
+    text-decoration-thickness: 1px;
+    border-bottom: none;
+    transition: color 0.2s ease-in-out;
+}

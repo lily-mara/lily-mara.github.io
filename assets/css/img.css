@@ -1,0 +1,20 @@
+img {
+    display: block;
+    margin: auto;
+}
+
+a img {
+  transition: border-color 0.2s ease-in-out;
+}
+
+a img:hover {
+  border: 3px solid hotpink;
+}
+
+.img-narrow {
+    max-width: 50%;
+}
+
+figure {
+    width: 100%;
+}
