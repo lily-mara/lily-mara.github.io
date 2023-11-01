@@ -3,6 +3,16 @@ a:hover {
     background-color: transparent;
 }
 
+.tags a:hover {
+    color: hotpink;
+    background-color: transparent;
+}
+
+.tags a {
+    /* border-bottom: none; */
+    text-decoration: none;
+}
+
 a {
     text-decoration: underline;
     text-decoration-color: hotpink;
