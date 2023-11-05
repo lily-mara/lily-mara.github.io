@@ -44,6 +44,8 @@ Just a list of sites that I think are cool.
 
 - [Lynn Fisher](https://lynnandtonic.com) - makes CSS art and funny stuff
 - [Neal.fun](https://neal.fun/) - makes fun web stuff
+- [AlienMelon](http://alienmelon.com) - web art
+  - [Tetrageddon](http://tetrageddon.com) - must be experienced
 
 # Tutorials/Technology
 
@@ -56,6 +58,7 @@ Just a list of sites that I think are cool.
 
 - [orb.farm](https://orb.farm) - tend to an aquarium
 - [Notcrying Nail Studio](https://notcrying.club/nailstudio/)
+- [Indiepocalypse](https://pizzapranks.com) ([itch.io](https://pizzapranks.itch.io)) - independent alternative game zine
 
 # Media
 
@@ -67,3 +70,4 @@ Just a list of sites that I think are cool.
 - [Neocities](https://neocities.org/browse) - hosting site for small web content
 - [Big list of Personal websites](http://biglist.terraaeon.com)
 - [Marginalia](https://search.marginalia.nu) - search engine for non-commercial content
+- [Mataroa Collection](https://collection.mataroa.blog) - collection of personal blogs
