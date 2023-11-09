@@ -1,15 +1,14 @@
 ---
 title: "ESPHome LED Controller"
 description: "when out-of-the-box isn't good enough"
-date: 2023-10-25T14:14:50-07:00
+date: 2023-11-09T00:00:00-08:00
 tags: [project, embedded, home-automation]
-draft: true
 ---
 
 I was recently given a very thoughtful gift, a custom LED sign from [Custom
 Neon](https://customneon.com) reading "Stay Silly."
 
-![image of my "stay silly sign" lit up on the wall](./PLACEHOLDER.svg)
+![image of my "stay silly sign" lit up on the wall](./silly-light.jpeg)
 
 I first heard this from
 [Maia Arson Crimew](https://maia.crimew.gay) earlier this year in a Twitter post
@@ -29,7 +28,7 @@ and an IR remote to control it. The remote let me turn the light on and off,
 change the brightness level, and display a few pre-programmed light patterns
 such as flashes and fades.
 
-![image of the control box and remote that came with the sign](./PLACEHOLDER.svg)
+![image of the control box and remote that came with the sign](./controller.jpeg)
 
 I loved the sign but I did somewhat bristle at the control options that were
 available out of the box. I have recently been experimenting with using open
@@ -56,7 +55,7 @@ the light's brightness was probably simply controlled by changing the voltage
 provided to it. Opening up the control box confirmed this, showing that there
 was a small microcontroller and some MOSFETs between the input and output pins.
 
-![image of the control box's circuit board](./PLACEHOLDER.svg)
+![image of the control box's circuit board](./controller-guts.jpeg)
 
 With this information, I reasoned that I could probably replace the control box
 fairly easily. Coincidentally, Chloe was just about to start shipping out her
@@ -184,11 +183,10 @@ which I think is pretty neat.
 
 ![four panel comic, dialogue between a user and esphome. panel 1: user: i want to program microcontrollers but i don't want to write c++. panel 2: esphome: here, you can write yaml that gets converted into C++. panel 3: user: i don't like yaml so i'm going to write jsonnet and convert that to yaml and convert that to C++. panel 4: esphome: u wot](./esphome.png)
 
-So let's talk about what actually goes _into_ these jsonnet files.
-
-TODO
-
-All that being said, if you want to use YAML, the light is configured like this:
+But most people are not actually going to be using this silly flow that I've
+built up. Most ESPHome users should be perfectly happy using their YAML config
+files. The actual YAML that you need to control this light (assuming the MOSFET
+is on pin 7) is this:
 
 ```yaml
 light:
@@ -210,4 +208,8 @@ So when all of this gets put together, I ended up with a very nice light that I
 can control via Home Assistant easily, and when I turn it on and off, I get a
 nice beautiful fade :)
 
-![video of the light fading on and off](./PLACEHOLDER.svg)
+{{< img-narrow >}}
+
+<video controls width="100%" src="./silly-light.mp4">
+
+{{< /img-narrow >}}
