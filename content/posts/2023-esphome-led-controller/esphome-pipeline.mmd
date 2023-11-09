@@ -1,0 +1,10 @@
+flowchart LR
+    jsonnet --templates--> yaml["yaml (json)"]
+    yaml --templates--> c++
+
+    subgraph esphome
+    c++ --"compiles into"--> firmware
+    firmware --> ota["OTA update process"]
+    end
+
+    ota --> microcontroller
