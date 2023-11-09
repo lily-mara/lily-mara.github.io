@@ -13,6 +13,7 @@ customcss = [
     "css/reading-time.css",
     "css/img.css",
     "css/a.css",
+    "css/heading.css",
 ]
 mode = "light"
 favicon = "/favicon.png"

@@ -1,0 +1,1 @@
+<h{{ .Level }} class="with-prelink" id="{{ .Anchor | safeURL }}"><a class="heading-prelink" href="#{{ .Anchor | safeURL }}">{{ range $num := (seq .Level) }}#{{end}}</a> {{ .Text | safeHTML }} </h{{ .Level }}>

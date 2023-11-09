@@ -1,0 +1,20 @@
+h1.with-prelink::before { content: none !important; }
+h2.with-prelink::before { content: none !important; }
+h3.with-prelink::before { content: none !important; }
+h4.with-prelink::before { content: none !important; }
+h5.with-prelink::before { content: none !important; }
+h6.with-prelink::before { content: none !important; }
+
+a.heading-prelink {
+    color: var(--maincolor);
+}
+
+a.heading-prelink {
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+}
+
+a.heading-prelink:hover {
+    background-color: var(--maincolor);
+    color: white;
+}
