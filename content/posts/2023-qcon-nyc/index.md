@@ -11,3 +11,5 @@ Postgres updates using highly concurrent Apache Kafka consumers, and the
 struggles that we ran into during that process.
 
 [Download slides](./slides.pdf)
+
+[Watch recording](https://www.infoq.com/presentations/reliable-kafka-data-processing-pipeline/)
