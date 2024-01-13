@@ -1,15 +1,13 @@
 a:hover {
-    color: hotpink;
-    background-color: transparent;
+    color: black !important;
+    background-color: hotpink;
 }
 
 .tags a:hover {
-    color: hotpink;
-    background-color: transparent;
+    background-color: hotpink;
 }
 
 .tags a {
-    /* border-bottom: none; */
     text-decoration: none;
 }
 
@@ -18,5 +16,5 @@ a {
     text-decoration-color: hotpink;
     text-decoration-thickness: 1px;
     border-bottom: none;
-    transition: color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
 }

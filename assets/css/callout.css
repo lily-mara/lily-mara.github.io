@@ -19,6 +19,15 @@
     color: #3578f6;
 }
 
+.callout a {
+    border-bottom: none !important;
+}
+
+.callout a:hover {
+    background-color: hotpink;
+    color: black;
+}
+
 .callout-warning {
     background-color: #fcf2ea;
 }
