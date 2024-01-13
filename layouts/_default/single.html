@@ -13,10 +13,10 @@
 		</div>{{ end }}
 
 		{{ if gt .WordCount 400  }}
-			<aside class="TableOfContents">
-				<h3>Contents</h3>
+			<details class="TableOfContents">
+				<summary>Contents</summary>
 				{{ .TableOfContents }}
-			</aside>
+			</details>
 		{{ end }}
 
 		<section class="body">

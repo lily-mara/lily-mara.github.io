@@ -31,7 +31,7 @@ weight = 15
 
 [markup.tableOfContents]
 endLevel = 3
-ordered = false
+ordered = true
 startLevel = 1
 
 [markup.goldmark.renderer]

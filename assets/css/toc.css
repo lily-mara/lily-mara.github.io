@@ -1,14 +1,29 @@
-aside.TableOfContents {
-    background-color: #eeeeee;
-    border: 1px black solid;
+details.TableOfContents {
+    background-color: #fff0f7;
     padding: 1em;
     border-radius: 1em;
+    transition: background-color 0.2s ease-in-out;
 }
 
-aside.TableOfContents h3::before{
+details.TableOfContents[open] {
+    background-color: hotpink;
+}
+
+details.TableOfContents a {
+    background-color: black;
+    color: white;
+    text-decoration: none;
+}
+
+details.TableOfContents a:hover {
+    background-color: white;
+    color: black;
+}
+
+details.TableOfContents h3::before{
     content: '' !important;
 }
 
-aside.TableOfContents h3 {
+details.TableOfContents h3 {
     margin-top: 0;
 }
