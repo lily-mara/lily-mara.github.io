@@ -1,7 +1,7 @@
 {{ define "main" }}
 <main>
 	<article>
-		<div class="title">
+		<div class="title" id="PageTitleBox">
 			<h1 class="title">{{ .Title }}</h1>
 			<div class="meta">Posted on {{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT</span> {{ end }} {{partial "reading-time.html" .}}</div>
 			<div class="meta"></div>
@@ -11,6 +11,13 @@
 			<strong>tl;dr:</strong>
 			{{ .Params.tldr }}
 		</div>{{ end }}
+
+		{{ if gt .WordCount 400  }}
+			<aside class="TableOfContents">
+				<h3>Contents</h3>
+				{{ .TableOfContents }}
+			</aside>
+		{{ end }}
 
 		<section class="body">
 			{{ .Content }}

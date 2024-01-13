@@ -8,6 +8,7 @@ enableRobotsTXT = true
 [params]
 customcss = [
     "css/pink.css",
+    "css/toc.css",
     "css/callout.css",
     "css/copy.css",
     "css/reading-time.css",
@@ -27,6 +28,11 @@ weight = 5
 name = "/now"
 url = "/now"
 weight = 15
+
+[markup.tableOfContents]
+endLevel = 3
+ordered = false
+startLevel = 1
 
 [markup.goldmark.renderer]
 unsafe = true
