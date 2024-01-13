@@ -9,6 +9,10 @@ details.TableOfContents[open] {
     background-color: hotpink;
 }
 
+details.TableOfContents ::selection {
+    background-color: lightblue;
+}
+
 details.TableOfContents a {
     background-color: black;
     color: white;
