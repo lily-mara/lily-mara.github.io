@@ -12,7 +12,18 @@ a img:hover {
 }
 
 .img-narrow {
-    max-width: 50%;
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    gap: 20px;
+}
+
+.img-narrow a {
+  max-width: 50%;
+}
+
+.img-narrow img {
+  max-height: 350px;
 }
 
 figure {
