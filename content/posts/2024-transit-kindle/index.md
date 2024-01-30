@@ -357,8 +357,6 @@ bindings](https://github.com/rust-skia/rust-skia) for the popular
 underpinning Chrome, so we'll be getting some of the same rendering technology
 with a lot less of the bloat from Puppeteer.
 
-# Rust rewrite - getting started
-
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">NOTE</div>
@@ -579,7 +577,12 @@ necessary for this purpose so we can focus on what counts.
 
               // This is the time that the transit agency expects this
               // particular #29 bus to reach the Persia & Paris stop.
-              "ExpectedArrivalTime": "2024-01-28T18:21:21Z"
+              "ExpectedArrivalTime": "2024-01-28T18:21:21Z",
+
+              // This is a somewhat friendlier name for the destination. We'll
+              // use this but fall back to the longer one if this is
+              // unavailable.
+              "DestinationDisplay": "Baker Beach"
             }
           }
         }
@@ -653,6 +656,7 @@ struct MonitoredVehicleJourney {
 struct MonitoredCall {
     expected_arrival_time: Option<String>,
     stop_point_ref: String,
+    destination_display: Option<String>,
 }
 
 #[tokio::main]
@@ -764,6 +768,7 @@ We should get an output file that looks something like this:
                 "2024-01-28T19:10:40Z",
             ),
             stop_point_ref: "15918",
+            destination_display: "Baker Beach"
         },
     },
     MonitoredVehicleJourney {
@@ -781,6 +786,7 @@ We should get an output file that looks something like this:
                 "2024-01-28T19:12:56Z",
             ),
             stop_point_ref: "15919",
+            destination_display: "Presidio"
         },
     },
 ...
@@ -926,7 +932,448 @@ PNG!
 
 # Building a PNG with Skia
 
-TODO: build the PNG
+Now, I'd never used Skia before, and I'd certainly never used the Skia Rust
+bindings before. Before we try to display bus times, let's make sure we
+understand how to set up our PNG rendering pipeline. When exploring a new
+problem space, "Hello World" is usually a good first program to build. Let's
+make a PNG8 image that's 1024x758 (the size of the Kindle screen) and make it
+display "Hello World" in the middle of the image.
+
+We'll need to start by including `skia-safe` in our dependencies.
+
+```toml
+# in Cargo.toml
+skia-safe = "0.70"
+```
+
+Now, let's make a new binary (for the time being) that we'll use for
+experimenting with Image files. I'll get us started with my (heavily annotated)
+"Hello World" Skia program.
+
+```rust
+use std::{fs::File, io::Write};
+
+use eyre::{ensure, eyre};
+use skia_safe::{
+    AlphaType, Bitmap, Canvas, Color4f, ColorType, Font, FontMgr, FontStyle, ImageInfo, Paint,
+};
+
+fn main() -> eyre::Result<()> {
+    // A skia "bitmap" is used as an in-memory region to store all of the pixels
+    // of our image. It is initially an empty 0x0 memory region.
+    let mut bitmap = Bitmap::new();
+
+    // The `ensure` macro from eyre will exit the function with an Err if this
+    // `set_info` call does not return `true`.
+    ensure!(
+        // This `set_info` call sets up the bitmap for the dimensions and color
+        // depth that we expect it to have.
+        bitmap.set_info(
+            &ImageInfo::new(
+                // This is the width and height of the image
+                (1024, 758),
+                // Since color depth affects per-pixel storage, we need to set
+                // this ahead of time so that Skia knows how much space (one
+                // byte) to allocate for each pixel in our image.
+                ColorType::Gray8,
+                // Our image will have no alpha channel
+                AlphaType::Unknown,
+                // The colorspace of an 8-bit PNG doesn't matter that much (to
+                // me at least)
+                None
+            ),
+            None
+        )
+    );
+    // We need to allocate the required space for our image's pixels after
+    // calling `set_info`.
+    bitmap.alloc_pixels();
+
+    // A skia "canvas" is the drawing context. It is the thing that knows how to
+    // draw text, 2D shapes, and everything else interesting that we care about
+    // drawing. We pass our bitmap to the constructor as this is where all of
+    // our image data will end up.
+    let canvas = Canvas::from_bitmap(&bitmap, None).ok_or(eyre!("skia canvas"))?;
+
+    // This call blanks the image with a fully white background. All the colors
+    // we'll be dealing with are represented as 32-bit floats between 0 and 1.
+    canvas.clear(Color4f::new(1.0, 1.0, 1.0, 1.0));
+
+    // In order to draw text, we need to load a "font," which is a combination
+    // of a "typeface," and a size. We'll load the "Arial" typeface and create a
+    // 48-point font with it.
+    let font_manager = FontMgr::new();
+    let typeface = font_manager
+        .match_family_style("Arial", FontStyle::normal())
+        .unwrap();
+    let font = Font::new(typeface, 48.0);
+
+    // Most of the drawing commands we'll give Skia will require us to use a
+    // "paint," something that tells Skia what color something should be. This
+    // black paint will be used as the color of our "Hello World" text.
+    let black_paint = Paint::new(Color4f::new(0.0, 0.0, 0.0, 1.0), None);
+
+    canvas.draw_str("Hello World!", (100, 100), &font, &black_paint);
+
+    // After drawing our image, we need to save it out to the filesystem so that
+    // we can view it. First we must convert our raw bitmap into a PNG image.
+    let png = bitmap
+        .as_image()
+        .encode(None, skia_safe::EncodedImageFormat::PNG, None)
+        .ok_or(eyre!("skia image encode"))?;
+
+    // These are the raw bytes of our PNG image. In this example, we're saving
+    // the bytes to the filesystem, but in the future these bytes will be
+    // streamed over an HTTP endpoint to our Kindle.
+    let png_bytes = png.as_bytes();
+
+    let mut f = File::create("out.png")?;
+    f.write_all(png_bytes)?;
+
+    Ok(())
+}
+```
+
+If we run this binary and open the generated `out.png` file, we should see our
+message!
+
+![hello world png file](./hello-world.png)
+
+Now that we can render some text, let's try to render some bus times instead.
+We'll aim to create a table-like display with a column for inbound vehicles and
+another for outbound vehicles. Each row in the table will represent a line in a
+particular direction. I'm going to make some fake times, in the interest of
+fast iteration time (remember it's rather slow to fetch data from the 511.org
+API, and there's also a low rate limit).
+
+```rust
+fn main() -> eyre::Result<()> {
+    ...
+
+    // These contain line IDs, Destination names, and lists of times of upcoming
+    // buses/trains.
+    let inbound_bus_times: &[(&str, &str, &[&str])] = &[
+        ("22", "Marina", &["5min", "7min"]),
+        ("K", "Embarcadero", &["3min", "10min"]),
+        ("J", "Downtown", &["0min", "8min", "13min"]),
+    ];
+    let outbound_bus_times: &[(&str, &str, &[&str])] = &[
+        ("22", "UCSF", &["3min", "9min"]),
+        ("K", "Balboa Park", &["12min", "20min"]),
+        ("J", "Balboa Park", &["1min", "127min", "128min"]),
+    ];
+
+    // Since we have two sets of times to render, we'll create a lambda that
+    // allows us to run the same code against two different sets of inputs - the
+    // two different sets of times, and the left and right column of the image.
+    let draw_times = |times: &[(&str, &str, &[&str])], x1: i32, x2: i32| {
+        let mut y = 30;
+        for (line_id, destination, times) in times {
+            canvas.draw_str(line_id, (x1 + 20, y), &font, &black_paint);
+
+            canvas.draw_str(destination, (x1 + 60, y), &font, &black_paint);
+
+            let mut times_str = String::new();
+            for time in *times {
+                times_str.push_str(time);
+                times_str.push_str(", ");
+            }
+            times_str.pop();
+            times_str.pop();
+
+            canvas.draw_str(times_str, (x1 + 260, y), &font, &black_paint);
+            canvas.draw_line((x1 + 10, y + 10), (x2 - 10, y + 10), &black_paint);
+            y += 40;
+        }
+    };
+
+    let width = 1024;
+    let height = 758;
+    let midpoint = 512;
+
+    draw_times(inbound_bus_times, 0, midpoint);
+    canvas.draw_line((midpoint, 0), (midpoint, height), &black_paint);
+    draw_times(outbound_bus_times, midpoint, width);
+
+    ...
+}
+```
+
+There's not really a whole lot that's new to us in this code example except for
+the `draw_line` function. We're using it to put a line underneath each
+bus/train's next arrival times, and in the middle of the image to divide the two
+columns. It's all just loops and setting text on the image. Running this
+program, we get a functional (if quite stale) display of times.
+
+![TODO](./render-01.png)
+
+Now that we're displaying an image, let's see if we can connect our API fetching
+code to the PNG generation code.
+
+# Building a PNG backed by data
+
+In order to accomplish this, we're going to need to change some of the data
+structures we're using to hold the journeys to more closely align with what our
+image generation code needs. Remember that the image generation code is
+expecting data broken down by direction, line ID, line destination, and then
+times. I'm also going to switch the data from the sleepy Prussia & Paris stop to
+a few stops located at Van Ness and Market, one of MUNI's busiest
+interconnection spots (anecdotally). Let's start with these changes before we
+add in the image generation.
+
+```rust
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    let client = Client::new();
+
+    let response_txt = client.get("http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=SF").send().await?.text().await?;
+
+    let response: StopMonitoringResponse = serde_json::from_str(&response_txt)?;
+
+    let mut journeys_i_care_about = Vec::new();
+
+    for stop_visit in response
+        .service_delivery
+        .stop_monitoring_delivery
+        .monitored_stop_visit
+    {
+        let stop = &stop_visit
+            .monitored_vehicle_journey
+            .monitored_call
+            .stop_point_ref;
+        // These four stop IDs represent IB/OB traffic at the Van Ness Metro
+        // stop, and East/West traffic on Market St at Van Ness.
+        if ["15419", "16996", "15692", "15696"].contains(&stop.as_ref()) {
+            journeys_i_care_about.push(stop_visit.monitored_vehicle_journey);
+        }
+    }
+
+    // The name is a little unwieldy, but this layered HashMap holds journeys
+    // organized first by direction (IB/OB), then a combination of line ID &
+    // destination name.
+    let mut directions_to_lines_destinations_to_journeys = HashMap::new();
+    for journey in journeys_i_care_about {
+        let Some(line) = journey.line_ref.clone() else {
+            continue;
+        };
+        let Some(direction) = journey.direction_ref.clone() else {
+            continue;
+        };
+        let Some(destination) = journey.monitored_call.destination_display.clone() else {
+            continue;
+        };
+
+        directions_to_lines_destinations_to_journeys
+            .entry(direction)
+            .or_insert(HashMap::new())
+            .entry((line, destination))
+            .or_insert(Vec::new())
+            .push(journey);
+    }
+
+    for lines_destinations_to_journeys in directions_to_lines_destinations_to_journeys.values_mut()
+    {
+        for journeys in lines_destinations_to_journeys.values_mut() {
+            journeys.sort_by_key(|j| j.monitored_call.expected_arrival_time.clone());
+        }
+    }
+
+    // We'll worry about this function later
+    draw_image(directions_to_lines_destinations_to_journeys)?;
+
+    Ok(())
+}
+```
+
+Now that we have the data prepped, let's make the changes to our image
+generation to support live data.
+
+```rust
+fn draw_image(
+    directions_to_lines_destinations_to_journeys: HashMap<
+        String,
+        HashMap<(String, String), Vec<MonitoredVehicleJourney>>,
+    >,
+) -> eyre::Result<()> {
+    let mut bitmap = Bitmap::new();
+    ensure!(bitmap.set_info(
+        &ImageInfo::new((1024, 758), ColorType::Gray8, AlphaType::Unknown, None),
+        None
+    ));
+    bitmap.alloc_pixels();
+
+    let canvas = Canvas::from_bitmap(&bitmap, None).ok_or(eyre!("skia canvas"))?;
+
+    canvas.clear(Color4f::new(1.0, 1.0, 1.0, 1.0));
+
+    let font_manager = FontMgr::new();
+    let typeface = font_manager
+        .match_family_style("Arial", FontStyle::normal())
+        .unwrap();
+    let font = Font::new(typeface, 24.0);
+
+    let black_paint = Paint::new(Color4f::new(0.0, 0.0, 0.0, 1.0), None);
+
+    let inbound_journeys = &directions_to_lines_destinations_to_journeys["IB"];
+    let outbound_journeys = &directions_to_lines_destinations_to_journeys["OB"];
+
+    let draw_times = |lines_destinations_to_journeys: &HashMap<
+        (String, String),
+        Vec<MonitoredVehicleJourney>,
+    >,
+                      x1: i32,
+                      x2: i32| {
+        let mut y = 30;
+        for ((line_id, destination), journeys) in lines_destinations_to_journeys {
+            canvas.draw_str(line_id, (x1 + 20, y), &font, &black_paint);
+
+            canvas.draw_str(destination, (x1 + 60, y), &font, &black_paint);
+
+            let mut times_str = String::new();
+            for journey in journeys {
+                let Some(time_str) = &journey.monitored_call.expected_arrival_time else {
+                    continue;
+                };
+
+                let Ok(time) = time_str.parse::<DateTime<Utc>>() else {
+                    continue;
+                };
+
+                if time < Utc::now() {
+                    continue;
+                }
+
+                let time = format!("{}min, ", (time - Utc::now()).num_minutes());
+
+                times_str.push_str(&time);
+            }
+            times_str.pop();
+            times_str.pop();
+
+            canvas.draw_str(times_str, (x1 + 260, y), &font, &black_paint);
+            canvas.draw_line((x1 + 10, y + 10), (x2 - 10, y + 10), &black_paint);
+            y += 40;
+        }
+    };
+
+    let width = 1024;
+    let height = 758;
+    let midpoint = 512;
+
+    draw_times(inbound_journeys, 0, midpoint);
+    canvas.draw_line((midpoint, 0), (midpoint, height), &black_paint);
+    draw_times(outbound_journeys, midpoint, width);
+
+    let png = bitmap
+        .as_image()
+        .encode(None, skia_safe::EncodedImageFormat::PNG, None)
+        .ok_or(eyre!("skia image encode"))?;
+    let png_bytes = png.as_bytes();
+
+    let mut f = File::create("out.png")?;
+    f.write_all(png_bytes)?;
+
+    Ok(())
+}
+```
+
+There's a little bit more logic in there now, but it's basically the same as the
+previous standalone image generator. Let's run our program and get a beautiful,
+accurate timetable of the Van Ness busses and trams!
+
+![TODO](./render-02.png)
+
+Uh oh. Now, absolutely nobody in the world could have predicted this, but our
+real-world data were more complicated than the test data that I thought up while
+I was heavily biased towards "I don't want to type very much." The main issue
+here is that we have a static layout for each of our rows, despite the fact that
+there's a slightly different amount of data to display in each of the rows.
+We're going to have to do a little bit of _visual design_, but before we do let's add
+a little short-circuit to the API-calling code so that we can iterate on this
+quickly and not get rate-limited.
+
+```rust
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    let response_txt = match std::fs::read_to_string("data.json") {
+        Ok(x) => x,
+        Err(_) => {
+            let client = Client::new();
+
+            let data = client.get("http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=SF").send().await?.text().await?;
+            std::fs::write("data.json", &data)?;
+            data
+        }
+    };
+
+    let response: StopMonitoringResponse = serde_json::from_str(&response_txt)?;
+    ...
+```
+
+Now then, here's how we're going to update the drawing:
+
+- Right-justify the times of upcoming vehicles so that there's no wasted space
+  at the end of the timetables
+- Remove the "min" between each time on the table, adding it only at the end of
+  the list. This maximizes useful information and minimizes cruft
+- Only display the next 3 vehicles, we don't have space for all of them
+- Scoot the destination names a bit to the right to compensate for the longer
+  bus names
+
+Let's start with these three changes and see how far that gets us. The
+`draw_times` lambda in `draw_image` is really the only thing that needs to
+change.
+
+```rust
+let draw_times = |lines_destinations_to_journeys: &HashMap<
+    (String, String),
+    Vec<MonitoredVehicleJourney>,
+>,
+                    x1: i32,
+                    x2: i32| {
+    let mut y = 30;
+    for ((line_id, destination), journeys) in lines_destinations_to_journeys {
+        canvas.draw_str(line_id, (x1 + 20, y), &font, &black_paint);
+
+        canvas.draw_str(destination, (x1 + 90, y), &font, &black_paint);
+
+        let mut times_str = String::new();
+        for journey in &journeys[..journeys.len().min(3)] {
+            let Some(time_str) = &journey.monitored_call.expected_arrival_time else {
+                continue;
+            };
+
+            let Ok(time) = time_str.parse::<DateTime<Utc>>() else {
+                continue;
+            };
+
+            if time < Utc::now() {
+                continue;
+            }
+
+            let time = format!("{}, ", (time - Utc::now()).num_minutes());
+
+            times_str.push_str(&time);
+        }
+        times_str.pop();
+        times_str.pop();
+        times_str.push_str(" min");
+
+        canvas.draw_str_align(times_str, (x2 - 20, y), &font, &black_paint, Align::Right);
+        canvas.draw_line((x1 + 10, y + 10), (x2 - 10, y + 10), &black_paint);
+        y += 40;
+    }
+};
+```
+
+After this, we can re-run the program and get a much more legible (if quite
+bland and odd) timetable.
+
+![TODO](./render-03.png)
+
+This isn't a great looking timetable, and it's not what the finished product is
+going to look like, but it is what we're going to start out with. Now that we
+can generate a PNG with real image data, let's move on to serving it via HTTP.
 
 # Serving the PNG with Axum
 
