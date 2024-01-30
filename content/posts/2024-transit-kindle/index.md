@@ -6,8 +6,8 @@ tags: [project, rust, transit]
 description: "How I built a transit dashboard with Rust, Skia, and an old Kindle"
 ---
 
-- TODO: re-number the sections when completed
 - TODO: shrink the images so the page isn't ~100MB
+- TODO: double-check code samples to make sure I didn't include my API key
 
 I live in San Francisco, and I don't own a car. This means that I walk or take
 public transit nearly everywhere that I go. There's a lot of ways to find out
@@ -34,7 +34,7 @@ post](https://matthealy.com/kindle) on building a smart home display with a
 Kindle. Matt used an old Kindle to display things like weather, calendar events,
 meal plans, and house cleaning schedules. I figured I could probably adapt his
 guide and make myself an always-available display of upcoming transit departures
-at the stops nearest to my apartment. Just today, I also saw [Ben Borgers'
+at the stops nearest to my apartment. I also saw [Ben Borgers'
 post](https://ben.page/eink) about using an old Nook as an iCloud photo frame.
 These devices are super cool, and can be had for quite cheap. I had a few old
 Kindles lying around collecting dust, and I was excited at the prospect of using
@@ -371,7 +371,636 @@ with a lot less of the bloat from Puppeteer.
   </div>
 </div>
 
-Let's start by making sure we can serve a PNG.
+There are three main components of this project. First, we'll have to find the
+upcoming transit departure times. Next, we need to be able to take these
+departure times and render them as an 8-bit PNG image. Finally (and probably the
+simplest) is an HTTP server which can return the generated PNG image data.
+
+# Getting the Data
+
+Let's start by making sure we can pull the upcoming transit departure times from
+511.org and write them out to the console. We'll start by making a new project
+with `cargo new` and defining our dependencies.
+
+```toml
+# In Cargo.toml
+[dependencies]
+# HTTP client crate
+reqwest = { version = "0.11.18", default-features = false, features = [
+    "json",
+
+    # 511.org API responses are gzip-encoded and enabling this feature will
+    # automatically decompress the payloads upon receiving them
+    "gzip",
+
+    # I used rustls because I was getting openssl linking errors on my Raspberry
+    # Pi and I'm too lazy to figure out how to actually fix those, so I just
+    # statically linked a TLS library. You do not have to use rustls, but if you
+    # omit this line, you will need to enable some other TLS backend.
+    "rustls-tls",
+] }
+
+# The de-facto standard serialization/deserialization crate for Rust, we'll
+# use this to parse the 511.org response bodies.
+serde = { version = "1.0.174", features = ["derive"] }
+
+# Serde is a generic serialization framework, it doesn't know about any
+# particular languages. The serde_json crate will allow us to parse JSON
+# specifically.
+serde_json = "1.0.103"
+
+# Time handling library, will allow us to parse time data from strings in the
+# 511.org response bodies.
+chrono = { version = "0.4.26", features = ["serde"] }
+
+# Async runtime that powers the concurrency systems our application will use -
+# `full` feature required as library is shipped with only the minimum core
+# functionality enabled and we need a little more than that.
+tokio = { version = "1.29.1", features = ["full"] }
+
+# Generic error reporting library
+eyre = "0.6"
+
+# Logging/tracing libraries
+tracing = "0.1"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+```
+
+Now before we can get to coding, we need to [get an API
+key](https://511.org/open-data/token) from 511.org, and take a look at the API
+definition. The 511.org docs are either [not super
+detailed](https://511.org/open-data/transit), or [quite
+detailed](https://511.org/media/407/show), depending on which docs you check.
+We'll be using the "Real-Time stop monitoring" endpoint, which the
+not-super-detailed docs summarize like this:
+
+> Real-time Stop Monitoring API provides the expected arrival and departure times of vehicles at a stop in XML and JSON formats.
+>
+> Endpoint: `http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=[operatorID]`
+>
+> Allowable parameters: api_key (mandatory), agency (mandatory), stopcode (optional) and format (optional)
+
+The "agency" parameter refers to the code for which of the 27 different Bay Area
+transit agencies you're requesting data for. You can only get data on one agency
+at a time. We're going to be pulling data for the San Francisco Municipal
+Railway, which has the agency code `SF` (you can find the agency ID for other
+transit agencies by using the
+`https://api.511.org/transit/gtfsoperators?api_key=[your_key]` endpoint for a
+list of all agencies and their IDs). The StopMonitoring endpoint returns
+upcoming departure times for _all stops_ of the given transit agency, which can
+be a lot of data, but the 511.org APIs have a relatively low rate limit (60
+requests per hour!) so if we expect to be able to show real-time status, we
+can't fetch times one stop at a time. Unfortunately, as far as I can tell, there
+is no way to fetch data on multiple stops at once other than fetching data for
+_all_ stops.
+
+Ok, let's open `main.rs` and grab all of the upcoming stop times for SF MUNI!
+
+```rust
+use reqwest::Client;
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    let client = Client::new();
+
+    let response = client.get("http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=SF").send().await?.text().await?;
+
+    println!("{response}");
+
+    Ok(())
+}
+```
+
+Now this program is going to print _a lot_ of text, let's make sure we redirect
+that to a file so we can more easily explore it. This also may take a little
+bit, for me the HTTP request takes around 5 seconds to complete and returns
+about 27 MiB of data!
+
+```
+$ cargo run > stops.json
+```
+
+If we open the resulting JSON file and format it (my formatted JSON file is over
+1 million lines long!) so that it's a bit easier to read, we can start to
+understand the structure of the data that's coming back. If we extract the outer structure of the object and the first element from the ~26k item-long list, we'll see something like this:
+
+```json
+{
+  "ServiceDelivery": {
+    "ResponseTimestamp": "2024-01-28T18:21:20Z",
+    "ProducerRef": "SF",
+    "Status": true,
+    "StopMonitoringDelivery": {
+      "version": "1.4",
+      "ResponseTimestamp": "2024-01-28T18:21:20Z",
+      "Status": true,
+      "MonitoredStopVisit": [
+        {
+          "RecordedAtTime": "2024-01-28T18:21:12Z",
+          "MonitoringRef": "15918",
+          "MonitoredVehicleJourney": {
+            "LineRef": "29",
+            "DirectionRef": "IB",
+            "FramedVehicleJourneyRef": {
+              "DataFrameRef": "2024-01-28",
+              "DatedVehicleJourneyRef": "11493704"
+            },
+            "PublishedLineName": "SUNSET",
+            "OperatorRef": "SF",
+            "OriginRef": "14648",
+            "OriginName": "Fitzgerald Ave & Keith St",
+            "DestinationRef": "13706",
+            "DestinationName": "Bowley St & Lincoln Blvd",
+            "Monitored": true,
+            "InCongestion": null,
+            "VehicleLocation": {
+              "Longitude": "-122.4319",
+              "Latitude": "37.721199"
+            },
+            "Bearing": "300.0000000000",
+            "Occupancy": "seatsAvailable",
+            "VehicleRef": "8739",
+            "MonitoredCall": {
+              "StopPointRef": "15918",
+              "StopPointName": "Persia Ave & Paris St",
+              "VehicleLocationAtStop": "",
+              "VehicleAtStop": "true",
+              "DestinationDisplay": "Baker Beach",
+              "AimedArrivalTime": "2024-01-28T18:21:16Z",
+              "ExpectedArrivalTime": "2024-01-28T18:21:21Z",
+              "AimedDepartureTime": "2024-01-28T18:21:16Z",
+              "ExpectedDepartureTime": null,
+              "Distances": ""
+            }
+          }
+        }
+        // ~26k other JSON objects that look basically like that
+      ]
+    }
+  }
+}
+```
+
+Now obviously, there's a whole lot of information in this response. Let's try
+trimming this down to what we might need in order to render our display.
+Remember that we're trying to display the upcoming departure times for a few
+lines at a few known stops. We'll filter out all of the fields that aren't
+necessary for this purpose so we can focus on what counts.
+
+```json
+{
+  "ServiceDelivery": {
+    "StopMonitoringDelivery": {
+      "MonitoredStopVisit": [
+        {
+          "MonitoredVehicleJourney": {
+            // This is the ID of the line, in this case, we're looking at the #29 bus
+            "LineRef": "29",
+
+            // The "direction" of the bus. SF MUNI vehicles report directions
+            // relative to downtown San Francisco, either "inbound" (IB) or
+            // "outbound" (OB). It's a bit strange for this particular line,
+            // since it goes _nowhere near downtown SF_ :/ but that's the system
+            // we have. This bus is heading inbound, which means it's going West
+            // from Bayview, then cutting North through the Sunset towards Baker
+            // Beach.
+            "DirectionRef": "IB",
+
+            // The name of the final stop on this line in the direction that
+            // this bus is headed.
+            "DestinationName": "Bowley St & Lincoln Blvd",
+            "MonitoredCall": {
+              // This is the ID of the stop of this estimated arrival. This
+              // particular stop is at Persia Ave & Paris St. in the Excelsior
+              // neighborhood of SF. We will not have to map stop IDs to
+              // locations for this project, but we will need to map locations
+              // to Stop IDs.
+              "StopPointRef": "15918",
+
+              // This is the time that the transit agency expects this
+              // particular #29 bus to reach the Persia & Paris stop.
+              "ExpectedArrivalTime": "2024-01-28T18:21:21Z"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+Basically all of the other fields in this response are irrelevant for our
+purposes. There's probably some future feature expansions that could be powered
+by the other data, but for now we're going to focus on these.
+
+Now that we have a bit of an understanding on how the data are structured, let's
+filter our data by the stops that we actually care about. This step is going to
+vary a bit depending on which transit operator you're using. For SF MUNI, the
+stop IDs are relatively easy to figure out. The [SF MUNI
+website](https://www.sfmta.com/stops/persia-ave-paris-st-15918) has realtime
+stop monitoring pages, which show you the ID of the stop in question. In the
+case of that link, it's the stop that we just looked at in the JSON snippet
+above, #15918 at Persia & Paris. Use the MUNI website to find the IDs of the
+stops close to you, paying attention to the fact that MUNI stops correspond with
+only one direction of transit. This means that there are two "Persia Ave & Paris
+St" stops for the #29 bus, [#15918 for
+inbound](https://www.sfmta.com/stops/persia-ave-paris-st-15918) busses, and [#15919
+for outbound](https://www.sfmta.com/stops/persia-ave-paris-st-15919) busses.
+
+Now that our Rust program is going to have to start caring about the structure
+of the returned JSON data, we can't just pass it around like text, we actually
+need to parse it.
+
+```rust
+use reqwest::Client;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+struct StopMonitoringResponse {
+    service_delivery: ServiceDelivery,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+struct ServiceDelivery {
+    stop_monitoring_delivery: StopMonitoringDelivery,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+struct StopMonitoringDelivery {
+    monitored_stop_visit: Vec<MonitoredStopVisit>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+struct MonitoredStopVisit {
+    monitored_vehicle_journey: MonitoredVehicleJourney,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+struct MonitoredVehicleJourney {
+    line_ref: Option<String>,
+    direction_ref: Option<String>,
+    destination_name: Option<String>,
+    monitored_call: MonitoredCall,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+struct MonitoredCall {
+    expected_arrival_time: Option<String>,
+    stop_point_ref: String,
+}
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    let client = Client::new();
+
+    let response: StopMonitoringResponse = client.get("http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=SF&stopCode=17073,18059").send().await?.json().await?;
+
+    let mut stops_i_care_about = Vec::new();
+
+    for stop_visit in response
+        .service_delivery
+        .stop_monitoring_delivery
+        .monitored_stop_visit
+    {
+        let stop = &stop_visit
+            .monitored_vehicle_journey
+            .monitored_call
+            .stop_point_ref;
+        if stop == "15918" || stop == "15919" {
+            stops_i_care_about.push(stop_visit.monitored_vehicle_journey);
+        }
+    }
+
+    println!("{stops_i_care_about:#?}");
+
+    Ok(())
+}
+```
+
+This should show us only the upcoming arrival times for the busses at both
+directions of the Persia & Paris stop. Let's try running it:
+
+```
+$ cargo run > stops.txt
+Error: error decoding response body: expected value at line 1 column 1
+
+Caused by:
+    expected value at line 1 column 1
+
+Location:
+    src/main.rs:48:44
+```
+
+Uh oh! For some reason, our JSON parser didn't like the value returned by the
+511.org server. Was it not valid JSON? It certainly looked like valid JSON when
+we looked at it. It turns out that 511.org returns a [UTF-8 Byte order
+mark](https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8) as the first three
+bytes of its API response, something that our JSON parser is not expecting.
+We'll need to remove those bytes before feeding the response to our JSON parser.
+
+```rust
+...
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    let client = Client::new();
+
+    // Using the `.text()` function parses the response as UTF-8 and strips the
+    // Byte order mark
+    let response_txt = client.get("http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=SF").send().await?.text().await?;
+
+    let response: StopMonitoringResponse = serde_json::from_str(&response_txt)?;
+
+    let mut stops_i_care_about = Vec::new();
+
+    for stop_visit in response
+        .service_delivery
+        .stop_monitoring_delivery
+        .monitored_stop_visit
+    {
+        let stop = &stop_visit
+            .monitored_vehicle_journey
+            .monitored_call
+            .stop_point_ref;
+        if stop == "15918" || stop == "15919" {
+            stops_i_care_about.push(stop_visit.monitored_vehicle_journey);
+        }
+    }
+
+    println!("{stops_i_care_about:#?}");
+
+    Ok(())
+}
+```
+
+Now let's try running this one more time.
+
+```sh
+$ cargo run > stops.txt
+```
+
+We should get an output file that looks something like this:
+
+```
+[
+    MonitoredVehicleJourney {
+        line_ref: Some(
+            "29",
+        ),
+        direction_ref: Some(
+            "IB",
+        ),
+        destination_name: Some(
+            "Bowley St & Lincoln Blvd",
+        ),
+        monitored_call: MonitoredCall {
+            expected_arrival_time: Some(
+                "2024-01-28T19:10:40Z",
+            ),
+            stop_point_ref: "15918",
+        },
+    },
+    MonitoredVehicleJourney {
+        line_ref: Some(
+            "29",
+        ),
+        direction_ref: Some(
+            "OB",
+        ),
+        destination_name: Some(
+            "Fitzgerald Ave & Keith St",
+        ),
+        monitored_call: MonitoredCall {
+            expected_arrival_time: Some(
+                "2024-01-28T19:12:56Z",
+            ),
+            stop_point_ref: "15919",
+        },
+    },
+...
+```
+
+At the time I ran this, I got about 20 upcoming arrivals back. This is going to
+be much more manageable than the 26k arrivals that we were initially looking at.
+
+Let's see if we can print out the departures in order of soonest to latest for
+each direction.
+
+```rust
+use std::collections::HashMap;
+...
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    ...
+
+    let mut lines_and_directions_to_arrivals = HashMap::new();
+    // This will organize the data into groups based on the line ID and the
+    // direction that the bus is traveling when it reaches the stop
+    for arrival in stops_i_care_about {
+        if let Some(line) = arrival.line_ref.clone() {
+            if let Some(direction) = arrival.direction_ref.clone() {
+                lines_and_directions_to_arrivals
+                    .entry((line, direction))
+                    .or_insert(Vec::new())
+                    .push(arrival);
+            }
+        }
+    }
+
+    // This will sort the list of arrivals for each stop by the (lexographic)
+    // order of the expected arrival time of each bus.
+    for stops in lines_and_directions_to_arrivals.values_mut() {
+        stops.sort_by_key(|s| s.monitored_call.expected_arrival_time.clone());
+    }
+
+    for ((line, direction), arrivals) in lines_and_directions_to_arrivals {
+        println!("=======");
+        println!("{line}: {direction}");
+        for arrival in arrivals {
+            if let Some(time) = arrival.monitored_call.expected_arrival_time {
+                println!("- {}", time);
+            }
+        }
+    }
+
+    Ok(())
+}
+```
+
+Running the code in its current form should give us something that's (nearly) usable!
+
+```
+$ cargo run
+=======
+29: OB
+- 2024-01-28T19:31:55Z
+- 2024-01-28T19:44:42Z
+- 2024-01-28T19:52:49Z
+- 2024-01-28T20:04:48Z
+- 2024-01-28T20:16:35Z
+- 2024-01-28T20:28:35Z
+- 2024-01-28T20:40:35Z
+- 2024-01-28T20:52:35Z
+- 2024-01-28T21:04:35Z
+=======
+29: IB
+- 2024-01-28T19:20:11Z
+- 2024-01-28T19:32:42Z
+- 2024-01-28T19:43:15Z
+- 2024-01-28T19:55:15Z
+- 2024-01-28T20:07:15Z
+- 2024-01-28T20:19:15Z
+- 2024-01-28T20:31:15Z
+- 2024-01-28T20:43:15Z
+- 2024-01-28T21:07:15Z
+- 2024-01-28T21:19:15Z
+- 2024-01-28T21:31:15Z
+```
+
+This technically shows us upcoming bus times, but it's not especially helpful.
+Let's turn those UTC timestamps into "how many minutes away is this bus."
+
+```rust
+use chrono::prelude::*;
+
+...
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    ...
+
+    for ((line, direction), arrivals) in lines_and_directions_to_arrivals {
+        println!("=======");
+        println!("{line}: {direction}");
+        for arrival in arrivals {
+            if let Some(time) = arrival.monitored_call.expected_arrival_time {
+                let time = time.parse::<DateTime<Utc>>()?;
+
+                if time < Utc::now() {
+                    continue;
+                }
+
+                println!("- {}min", (time - Utc::now()).num_minutes());
+            }
+        }
+    }
+
+    Ok(())
+}
+```
+
+Running this gives us something pretty close to our eventual goal.
+
+```sh
+$ cargo run
+=======
+29: OB
+- 13min
+- 27min
+- 42min
+- 57min
+- 72min
+- 87min
+- 102min
+- 117min
+=======
+29: IB
+- 18min
+- 30min
+- 59min
+- 74min
+- 89min
+- 104min
+- 124min
+```
+
+Now that we have these data, let's take a look at how we can put them into a
+PNG!
+
+# Building a PNG with Skia
+
+TODO: build the PNG
+
+# Serving the PNG with Axum
+
+Now that we can generate a PNG, let's build a server that can feed our image
+file to the Kindle. We'll need to add Axum to our dependency list.
+
+```toml
+# In Cargo.toml
+[dependencies]
+axum = "0.7"
+
+# Async runtime that powers Axum - `full` feature required as library is shipped
+# with only the minimum core functionality enabled and we need a little more
+# than that.
+tokio = { version = "1.29.1", features = ["full"] }
+
+# Generic error reporting library
+eyre = "0.6"
+
+# Logging/tracing libraries
+tracing = "0.1"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+```
+
+And let's write a basic HTTP server which can return PNG image data from a file.
+This code assumes you have a PNG file located at `image.png` in the root of the
+project directory (the same directory as your `Cargo.toml` file).
+
+```rust
+use axum::{
+    body::{Body, Bytes},
+    http::StatusCode,
+    response::Response,
+    routing::get,
+    Router,
+};
+use tokio::net::TcpListener;
+use tracing::info;
+use tracing_subscriber::EnvFilter;
+
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .without_time()
+        .init();
+
+    // This is how we tell Axum which HTTP paths correspond with handler
+    // functions
+    let app = Router::new().route("/stops.png", get(handle_stops_png));
+
+    let listener = TcpListener::bind(&"0.0.0.0:3001").await?;
+
+    info!(port = 3001, "listening!");
+
+    axum::serve(listener, app.into_make_service()).await?;
+
+    Ok(())
+}
+
+async fn handle_stops_png() -> Response<Body> {
+    let data = include_bytes!("../image.png");
+
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "image/png")
+        .body(Body::from(Bytes::from(data as &[u8])))
+        .unwrap()
+}
+```
+
+Running this server with `cargo run` and visiting
+`http://localhost:3001/stops.png` in your browser, you should see your image
+file.
 
 # Refining the UI
 
