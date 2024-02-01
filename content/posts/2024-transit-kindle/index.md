@@ -125,8 +125,8 @@ together what might be going on. Take a look at the expected PNG image, and what
 actually showed up on the Kindle display:
 
 {{< img-narrow >}}
-![TODO calibration image](./just-img-02.png)
-![TODO calibration image, messed up](./just-img-03.jpeg)
+![custom calibration image. it has large circles centered at each of the four corners, along with lines running from top left to bottom right, and top right to bottom left, and text labels "top," "bottom," "left," and "right" in the four quadrants created by the lines](./just-img-02.png)
+![photo of kindle displaying the calibration image, messed up. the top and bottom left corner circles appear in the right location, but the entire image appears stretched, as if it were pinned to the left edge of the display and then stretched to two or three times its width. The point where the diagonal lines meet in the middle of the image is not visible, it appears as though that should be slightly off to the right of the screen based on the lines.](./just-img-03.jpeg)
 {{</ img-narrow >}}
 
 Based on the stretch of the image, and the fact that the image seemed to cut off
@@ -135,8 +135,8 @@ horizontal dimension to 1/3, so it was now 1024x252. This provided _slightly_
 better results, but something was still very clearly wrong.
 
 {{< img-narrow >}}
-![TODO calibration image](./just-img-04.png)
-![TODO calibration image, messed up](./just-img-05.jpeg)
+![same custom calibration image as above, but compressed to 1/3 of the original width.](./just-img-04.png)
+![photo of kindle displaying calibration image. the proportions of the image appear correct, but the image is cut off at 1/3 of the width of the screen](./just-img-05.jpeg)
 {{</ img-narrow >}}
 
 I noticed this time that the image appeared to be un-stretched, but it didn't
@@ -146,15 +146,15 @@ another calibration image which had the full size of the Kindle display, but
 only put data in the left 33% of it. This was the most promising result yet.
 
 {{< img-narrow >}}
-![TODO calibration image](./just-img-06.png)
-![TODO calibration image, messed up](./just-img-07.jpeg)
+![calibration image mashed up against the leftmost 1/3 of the image, with the remaining horizontal 2/3 of the image being white space](./just-img-06.png)
+![photo of kindle displaying calibration image correctly](./just-img-07.jpeg)
 {{</ img-narrow >}}
 
 I applied this "empty space & stretching" technique to my BART screenshot, and
 displayed it on the page. initially, this looked very promising. On closer
 inspection however, I was disappointed.
 
-![TODO](./just-img-08.jpeg)
+![photo of kindle displaying a screenshot of the BART station status page. there is a zoomed-in inset showing heavy pixelation exists on the displayed image](./just-img-08.jpeg)
 
 The image appeared extremely pixelated on the Kindle display. Notice in the
 image that the text "Kindle" on the frame is very clear, the pixelation on the
@@ -212,14 +212,14 @@ the screen. The 1/3 width data, full-width metadata image works but looks poor
 because 1/3 of the resolution is being sacrificed. After using `convert` to turn
 my screenshot into an 8-bit PNG image, it displays correctly on the Kindle.
 
-![TODO](./just-img-09.jpeg)
+![photo of a kindle displaying the BART civic center status page, the image appears crisp and readable, but some of the text is cut off of the right edge of the display.](./just-img-09.jpeg)
 
 Now that I can display an image that looks alright, I padded the image so that
 it would fully fit within the viewport of the Kindle and re-displayed it.
 
 {{< img-narrow >}}
-![TODO calibration image](./just-img-10.png)
-![TODO calibration image, messed up](./just-img-11.jpeg)
+![screenshot of the BART civic center status page, reduced to the size of a kindle display. there are large white bars on the bottom and top of the image to compensate for the narrow aspect ratio of the screenshot](./just-img-10.png)
+![photo of kindle displaying BART civic center status page, the screenshot appears readable and fills the entire kindle display.](./just-img-11.jpeg)
 {{</ img-narrow >}}
 
 And there it is!
@@ -287,13 +287,13 @@ stops near me too, and I was somewhat successful at first. Like BART, MUNI has a
 page where they report on the time to departures of various lines at all of
 their stops across the city.
 
-![TODO](./muni-00.png)
+![screenshot of MUNI church st station status page. it shows upcoming K, M, and S trains.](./muni-00.png)
 
 I figured it would be a straightforward endeavor to pull screenshots from the
 status pages of all the stops that I cared about, and assemble them into one
 view. I imagined it would look something like this:
 
-![TODO](./muni-01.png)
+![display of upcoming train lines organized into two columns, with each column displaying multiple rows, one for each transit line. each line displays the line ID in a colored bubble, alongside a destination name and minutes to the next vehicle arrival for each line](./muni-01.png)
 
 I was able to make this by assembling some screenshots by hand in Photopea. Now
 that I had a goal, I set out to it. I was able to make something that pulled in
@@ -302,8 +302,8 @@ combining them with ImageMagick, and returning them to the Kindle. I was pretty
 happy with how it looked.
 
 {{< img-narrow >}}
-![TODO](./muni-02.png)
-![TODO](./muni-03.jpeg)
+![display of upcoming train lines organized into two columns, with each column displaying multiple rows, one for each transit line. each line displays the line ID in a colored bubble, alongside a destination name and minutes to the next vehicle arrival for each line](./muni-02.png)
+![photo of a kindle displaying the previous image](./muni-03.jpeg)
 {{</ img-narrow >}}
 
 This worked for a short time but it quickly became problematic. For a hint as to
@@ -317,7 +317,7 @@ low rate limits on these pages. These two issues combined to mean my BART & MUNI
 screens together were far less reliable than the BART one was on its own. Here's
 a rare picture of both displays working in tandem.
 
-![TODO](./muni-04.jpeg)
+![photo of two kindles mounted to a wall, one above the other. the top kindle displays the bart civic center status page, and the bottom kindle displays an assemblage of MUNI train and bus arrivals](./muni-04.jpeg)
 
 I stuck it out for a while, restarting my HTTP server when the stop data became
 stale or health checks started failing. Eventually though, I grew tired of this
@@ -1105,7 +1105,7 @@ bus/train's next arrival times, and in the middle of the image to divide the two
 columns. It's all just loops and setting text on the image. Running this
 program, we get a functional (if quite stale) display of times.
 
-![TODO](./render-01.png)
+![display with two columns, with rows in each column for transit lines. each row displays a line id, followed by a destination name, followed by next departure times. all text is left-aligned and all of the row ids are vertically aligned with each other row-to-row, all the destinations are aligned, and all the times are aligned. it appears as if it were made in a spreadsheet application](./render-01.png)
 
 Now that we're displaying an image, let's see if we can connect our API fetching
 code to the PNG generation code.
@@ -1281,7 +1281,7 @@ There's a little bit more logic in there now, but it's basically the same as the
 previous standalone image generator. Let's run our program and get a beautiful,
 accurate timetable of the Van Ness busses and trams!
 
-![TODO](./render-02.png)
+![display of two columns with rows in each column holding data on transit lines. there are a large number of points where text appears overlaid on other text, it is extremely difficult to read any of the text](./render-02.png)
 
 Uh oh. Now, absolutely nobody in the world could have predicted this, but our
 real-world data were more complicated than the test data that I thought up while
@@ -1369,7 +1369,7 @@ let draw_times = |lines_destinations_to_journeys: &HashMap<
 After this, we can re-run the program and get a much more legible (if quite
 bland and odd) timetable.
 
-![TODO](./render-03.png)
+![display with two columns, with rows in each column for transit lines. each row displays a line id, followed by a destination name, followed by next departure times. line ids and destinations are left-aligned, departure times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, all the destinations are aligned, and all the times are aligned. it appears as if it were made in a spreadsheet application, but by someone who cared slightly](./render-03.png)
 
 This isn't a great looking timetable, and it's not what the finished product is
 going to look like, but it is what we're going to start out with. Now that we
@@ -1469,7 +1469,7 @@ fn draw_image(
 If we run this server and visit the image page in our browser, we should see our
 beautiful schedule!
 
-![TODO](./render-04.png)
+![screenshot of a web browser showing the previous schedule image](./render-04.png)
 
 If we try to display this on our Kindle by fetching it via `wget` and displaying
 it via `eips`, we'll be disappointed to see that the image is rotated and cut
@@ -1585,7 +1585,7 @@ canvas.draw_str(destination, (bounds.right + 15.0, y), &font, &black_paint);
 
 These two small changes produce something that already looks leagues better.
 
-![TODO](./render-05.png)
+![display with two columns, with rows in each column for transit lines. each row displays a line id inside of a light grey bubble, followed by a destination name, followed by next departure times. line ids and destinations are left-aligned, departure times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, and all the times are aligned. it doesn't really look like a spreadsheet anymore](./render-05.png)
 
 The last change that we'll look at in detail here is to add column headers to
 the page.
@@ -1593,7 +1593,7 @@ the page.
 We'll accomplish this by drawing a light grey rectangle at the top of the page,
 then writing our column IDs inside the two halves of that rectangle,
 center-aligned. We'll also need to adjust the starting value for `y` in our
-`draw_times` function to TODO to compensate for the new top of the image.
+`draw_times` function to `60.0` to compensate for the new top of the image.
 
 ```rust
 ...
@@ -1624,7 +1624,7 @@ draw_times(inbound_journeys, 0.0, midpoint);
 
 Running this now, we get something that looks (I think) quite serviceable.
 
-![TODO](./render-06.png)
+![display with two columns with a header row. the left column is labeled "Muni Inbound" and the right column is labeled "Muni Outbound". There are rows in each column for transit lines. each row displays a line id inside of a light grey bubble, followed by a destination name, followed by next departure times. line ids and destinations are left-aligned, departure times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, and all the times are aligned.](./render-06.png)
 
 I did do more refinements after this, but I'm not going to discuss them in
 detail in this blog post.
@@ -1675,18 +1675,18 @@ some of the intermediate states that I took when building the UI, along with the
 final current state.
 
 {{< img-narrow >}}
-![TODO](./unified-01.png)
-![TODO](./unified-02.png)
+![a two-column schedule, with very oblong, off-center, and too-dark bubbles around each of the line IDs](./unified-01.png)
+![a two-column schedule, with rounded rectangle light grey bubbles around line IDs, column headers, and a footer displaying the time](./unified-02.png)
 {{</ img-narrow >}}
 
 {{< img-narrow >}}
-![TODO](./unified-03.png)
-![TODO](./unified-04.png)
+![two-column schedule, with antialiased bubbles around line IDs, column headers, and a footer displaying the time and text reading "data age 79 min"](./unified-03.png)
+![two-column schedule, with bubbles of different grey shades for line IDs](./unified-04.png)
 {{</ img-narrow >}}
 
 {{< img-narrow >}}
-![TODO](./unified-05.png)
-![TODO](./unified-06.png)
+![two-column schedule, with destination name text that appears to fade behind the departure times if it is too long, and a footer that displays the time and the word "MUNI" followed by a check mark](./unified-05.png)
+![two-column schedule, with shorter destination name text](./unified-06.png)
 {{</ img-narrow >}}
 
 Thanks for reading!
