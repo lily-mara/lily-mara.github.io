@@ -8,6 +8,7 @@ description: "How I built a transit dashboard with Rust, Skia, and an old Kindle
 
 - TODO: shrink the images so the page isn't ~100MB
 - TODO: double-check code samples to make sure I didn't include my API key
+- TODO: I need a section on rotating the rust-generated PNG images for the Kindle
 
 I live in San Francisco, and I don't own a car. This means that I walk or take
 public transit nearly everywhere that I go. There's a lot of ways to find out
@@ -39,6 +40,13 @@ post](https://ben.page/eink) about using an old Nook as an iCloud photo frame.
 These devices are super cool, and can be had for quite cheap. I had a few old
 Kindles lying around collecting dust, and I was excited at the prospect of using
 them for something productive again.
+
+<div class="callout callout-warning">
+	<div class="callout-inner">
+        <div class="callout-header">WARNING</div>
+        <p>This is a long blog post. It was a lot of work writing it, so I hope you read it all and enjoy (and email me to tell me you liked it pls), but yeah you're in for a long one here.</p>
+  </div>
+</div>
 
 <div class="callout">
 	<div class="callout-inner">
@@ -418,10 +426,6 @@ tokio = { version = "1.29.1", features = ["full"] }
 
 # Generic error reporting library
 eyre = "0.6"
-
-# Logging/tracing libraries
-tracing = "0.1"
-tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 ```
 
 Now before we can get to coding, we need to [get an API
@@ -1013,7 +1017,7 @@ fn main() -> eyre::Result<()> {
     // black paint will be used as the color of our "Hello World" text.
     let black_paint = Paint::new(Color4f::new(0.0, 0.0, 0.0, 1.0), None);
 
-    canvas.draw_str("Hello World!", (100, 100), &font, &black_paint);
+    canvas.draw_str("Hello World!", (100.0, 100.0), &font, &black_paint);
 
     // After drawing our image, we need to save it out to the filesystem so that
     // we can view it. First we must convert our raw bitmap into a PNG image.
@@ -1066,12 +1070,12 @@ fn main() -> eyre::Result<()> {
     // Since we have two sets of times to render, we'll create a lambda that
     // allows us to run the same code against two different sets of inputs - the
     // two different sets of times, and the left and right column of the image.
-    let draw_times = |times: &[(&str, &str, &[&str])], x1: i32, x2: i32| {
-        let mut y = 30;
+    let draw_times = |times: &[(&str, &str, &[&str])], x1: f32, x2: f32| {
+        let mut y = 30.0;
         for (line_id, destination, times) in times {
-            canvas.draw_str(line_id, (x1 + 20, y), &font, &black_paint);
+            canvas.draw_str(line_id, (x1 + 20.0, y), &font, &black_paint);
 
-            canvas.draw_str(destination, (x1 + 60, y), &font, &black_paint);
+            canvas.draw_str(destination, (x1 + 60.0, y), &font, &black_paint);
 
             let mut times_str = String::new();
             for time in *times {
@@ -1081,18 +1085,18 @@ fn main() -> eyre::Result<()> {
             times_str.pop();
             times_str.pop();
 
-            canvas.draw_str(times_str, (x1 + 260, y), &font, &black_paint);
-            canvas.draw_line((x1 + 10, y + 10), (x2 - 10, y + 10), &black_paint);
-            y += 40;
+            canvas.draw_str(times_str, (x1 + 260.0, y), &font, &black_paint);
+            canvas.draw_line((x1 + 10.0, y + 10.0), (x2 - 10.0, y + 10.0), &black_paint);
+            y += 40.0;
         }
     };
 
-    let width = 1024;
-    let height = 758;
-    let midpoint = 512;
+    let width = 1024.0;
+    let height = 758.0;
+    let midpoint = 512.0;
 
-    draw_times(inbound_bus_times, 0, midpoint);
-    canvas.draw_line((midpoint, 0), (midpoint, height), &black_paint);
+    draw_times(inbound_bus_times, 0.0, midpoint);
+    canvas.draw_line((midpoint, 0.0), (midpoint, height), &black_paint);
     draw_times(outbound_bus_times, midpoint, width);
 
     ...
@@ -1221,13 +1225,13 @@ fn draw_image(
         (String, String),
         Vec<MonitoredVehicleJourney>,
     >,
-                      x1: i32,
-                      x2: i32| {
-        let mut y = 30;
+                      x1: f32,
+                      x2: f32| {
+        let mut y = 30.0;
         for ((line_id, destination), journeys) in lines_destinations_to_journeys {
-            canvas.draw_str(line_id, (x1 + 20, y), &font, &black_paint);
+            canvas.draw_str(line_id, (x1 + 20.0, y), &font, &black_paint);
 
-            canvas.draw_str(destination, (x1 + 60, y), &font, &black_paint);
+            canvas.draw_str(destination, (x1 + 60.0, y), &font, &black_paint);
 
             let mut times_str = String::new();
             for journey in journeys {
@@ -1250,18 +1254,18 @@ fn draw_image(
             times_str.pop();
             times_str.pop();
 
-            canvas.draw_str(times_str, (x1 + 260, y), &font, &black_paint);
-            canvas.draw_line((x1 + 10, y + 10), (x2 - 10, y + 10), &black_paint);
-            y += 40;
+            canvas.draw_str(times_str, (x1 + 260.0, y), &font, &black_paint);
+            canvas.draw_line((x1 + 10.0, y + 10.0), (x2 - 10.0, y + 10.0), &black_paint);
+            y += 40.0;
         }
     };
 
-    let width = 1024;
-    let height = 758;
-    let midpoint = 512;
+    let width = 1024.0;
+    let height = 758.0;
+    let midpoint = 512.0;
 
-    draw_times(inbound_journeys, 0, midpoint);
-    canvas.draw_line((midpoint, 0), (midpoint, height), &black_paint);
+    draw_times(inbound_journeys, 0.0, midpoint);
+    canvas.draw_line((midpoint, 0.0), (midpoint, height), &black_paint);
     draw_times(outbound_journeys, midpoint, width);
 
     let png = bitmap
@@ -1329,13 +1333,13 @@ let draw_times = |lines_destinations_to_journeys: &HashMap<
     (String, String),
     Vec<MonitoredVehicleJourney>,
 >,
-                    x1: i32,
-                    x2: i32| {
-    let mut y = 30;
+                    x1: f32,
+                    x2: f32| {
+    let mut y = 30.0;
     for ((line_id, destination), journeys) in lines_destinations_to_journeys {
-        canvas.draw_str(line_id, (x1 + 20, y), &font, &black_paint);
+        canvas.draw_str(line_id, (x1 + 20.0, y), &font, &black_paint);
 
-        canvas.draw_str(destination, (x1 + 90, y), &font, &black_paint);
+        canvas.draw_str(destination, (x1 + 90.0, y), &font, &black_paint);
 
         let mut times_str = String::new();
         for journey in &journeys[..journeys.len().min(3)] {
@@ -1359,9 +1363,9 @@ let draw_times = |lines_destinations_to_journeys: &HashMap<
         times_str.pop();
         times_str.push_str(" min");
 
-        canvas.draw_str_align(times_str, (x2 - 20, y), &font, &black_paint, Align::Right);
-        canvas.draw_line((x1 + 10, y + 10), (x2 - 10, y + 10), &black_paint);
-        y += 40;
+        canvas.draw_str_align(times_str, (x2 - 20.0, y), &font, &black_paint, Align::Right);
+        canvas.draw_line((x1 + 10.0, y + 10.0), (x2 - 10.0, y + 10.0), &black_paint);
+        y += 40.0;
     }
 };
 ```
@@ -1382,25 +1386,12 @@ file to the Kindle. We'll need to add Axum to our dependency list.
 
 ```toml
 # In Cargo.toml
-[dependencies]
 axum = "0.7"
-
-# Async runtime that powers Axum - `full` feature required as library is shipped
-# with only the minimum core functionality enabled and we need a little more
-# than that.
-tokio = { version = "1.29.1", features = ["full"] }
-
-# Generic error reporting library
-eyre = "0.6"
-
-# Logging/tracing libraries
-tracing = "0.1"
-tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 ```
 
-And let's write a basic HTTP server which can return PNG image data from a file.
-This code assumes you have a PNG file located at `image.png` in the root of the
-project directory (the same directory as your `Cargo.toml` file).
+And thankfully, this is about the easiest part of the project to build. Let's
+start by writing an HTTP server with a handler for our PNG file, and make that
+handler return an empty body.
 
 ```rust
 use axum::{
@@ -1411,23 +1402,14 @@ use axum::{
     Router,
 };
 use tokio::net::TcpListener;
-use tracing::info;
-use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
-        .without_time()
-        .init();
-
-    // This is how we tell Axum which HTTP paths correspond with handler
-    // functions
     let app = Router::new().route("/stops.png", get(handle_stops_png));
 
     let listener = TcpListener::bind(&"0.0.0.0:3001").await?;
 
-    info!(port = 3001, "listening!");
+    eprintln!("Visit http://localhost:3001/stops.png");
 
     axum::serve(listener, app.into_make_service()).await?;
 
@@ -1435,24 +1417,262 @@ async fn main() -> eyre::Result<()> {
 }
 
 async fn handle_stops_png() -> Response<Body> {
-    let data = include_bytes!("../image.png");
-
     Response::builder()
         .status(StatusCode::OK)
         .header("Content-Type", "image/png")
-        .body(Body::from(Bytes::from(data as &[u8])))
+        .body(Body::from(Bytes::from(&[])))
         .unwrap()
 }
 ```
 
 Running this server with `cargo run` and visiting
-`http://localhost:3001/stops.png` in your browser, you should see your image
-file.
+`http://localhost:3001/stops.png` in your browser won't return any content, but
+it should respond with a HTTP 200. Now let's connect our HTTP server with the
+image generation code. We need to make some subtle changes to that code so that
+image data gets passed around in memory instead of being written to a file.
+
+```rust
+...
+
+async fn handle_stops_png() -> Response<Body> {
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "image/png")
+        .body(Body::from(Bytes::from(get_image().await.unwrap())))
+        .unwrap()
+}
+
+// This used to be the `main` function when the program was just saving images
+// to disk, notice that the return type has changed
+async fn get_image() -> eyre::Result<Vec<u8>> {
+    let response_txt = match std::fs::read_to_string("data.json") {
+    ...
+
+    let png_bytes = draw_image(directions_to_lines_destinations_to_journeys)?;
+
+    Ok(png_bytes)
+}
+
+// Notice that the return type of this function has changed
+fn draw_image(
+    directions_to_lines_destinations_to_journeys: HashMap<
+        String,
+        HashMap<(String, String), Vec<MonitoredVehicleJourney>>,
+    >,
+) -> eyre::Result<Vec<u8>> {
+    ...
+
+    let png_bytes = png.as_bytes();
+
+    // Recall that previously these bytes were written to a file instead of
+    // being returned from the function.
+    Ok(png_bytes.to_owned())
+}
+```
+
+If we run this server and visit the image page in our browser, we should see our
+beautiful schedule!
+
+![TODO](./render-04.png)
+
+Now that we have something that works end-to-end, let's improve the layout of
+our schedule a bit.
+
+<div class="callout callout-success">
+	<div class="callout-inner">
+        <div class="callout-header">GOAL RE-ACHIEVED!</div>
+        <p>We now have an HTTP server that can render upcoming transit departure times in a format that our Kindle can digest. It's important to recognize that the project is perfectly usable as it is right now (if you remove the "cache all the data forever" bit), and all of the further work that we're going to look at is <em>enhancement</em>. Something doesn't need to be beautiful to be functional, but it is nice when things are beautiful.</p>
+  </div>
+</div>
 
 # Refining the UI
 
-# Make Updates Async
+Now our schedule may be, strictly speaking, usable. But it's not what I'd call
+beautiful. Despite our spacing efforts, text can still overlay each other, and
+the most important things don't look the most important. Let's start by doing
+something that sounds simple (but actually isn't). Let's put the Line ID in a
+nice little bubble so that it stands out.
 
-# Polish the UI
+We're going to do this by first making a helper function that can tell us how
+big a given piece of text is expected to be, based on the font and the paint
+that we're going to use to render it.
+
+```rust
+use skia_safe::{
+    utils::text_utils::Align, AlphaType, Bitmap, Canvas, Color4f, ColorType, Font, FontMgr,
+    FontStyle, ImageInfo, Paint, Rect,
+};
+
+...
+
+fn text_bounds(text: &str, (x, y): (f32, f32), font: &Font, paint: &Paint) -> Rect {
+    let (text_width, text_measurements) = font.measure_str(text, Some(paint));
+    // It took me a few tries to figure out exactly how to make use of the
+    // `measure_str` method, but this gives us a bounding box on the exact size
+    // of whatever text we input.
+    Rect::new(x, y + text_measurements.top, x + text_width, y)
+}
+```
+
+Next, we'll use this method to draw a rounded rectangle, slightly larger than
+the line ID.
+
+```rust
+...
+fn draw_image(
+    directions_to_lines_destinations_to_journeys: HashMap<
+        String,
+        HashMap<(String, String), Vec<MonitoredVehicleJourney>>,
+    >,
+) -> eyre::Result<Vec<u8>> {
+    ...
+    let black_paint = Paint::new(Color4f::new(0.0, 0.0, 0.0, 1.0), None);
+    // We need a new paint, since we want our bubble to be a light grey color so
+    // that it shows up behind the black text
+    let line_id_bubble_paint = Paint::new(Color4f::new(0.8, 0.8, 0.8, 1.0), None);
+
+    ...
+
+    let draw_times = |...| {
+        for ((line_id, destination), journeys) in lines_destinations_to_journeys {
+            let bounds = text_bounds(
+                line_id,
+                (x1 + 20.0, y),
+                &font,
+                &line_id_bubble_paint,
+            )
+            .with_outset((8.0, 8.0));
+            canvas.draw_round_rect(bounds, 24.0, 24.0, &line_id_bubble_paint);
+            canvas.draw_str(line_id, (x1 + 20.0, y), &font, &black_paint);
+
+            ...
+        }
+    };
+
+    ...
+}
+
+```
+
+Also, now that we know the exact X-coordinate where our Line ID (and associated
+bubble) will end, we can use this to place the destination string with exactly
+15 pixels of padding room.
+
+```rust
+canvas.draw_str(destination, (bounds.right + 15.0, y), &font, &black_paint);
+```
+
+These two small changes produce something that already looks leagues better.
+
+![TODO](./render-05.png)
+
+The last change that we'll look at in detail here is to add column headers to
+the page.
+
+We'll accomplish this by drawing a light grey rectangle at the top of the page,
+then writing our column IDs inside the two halves of that rectangle,
+center-aligned. We'll also need to adjust the starting value for `y` in our
+`draw_times` function to TODO to compensate for the new top of the image.
+
+```rust
+...
+let width = 1024.0;
+let height = 758.0;
+let midpoint = 512.0;
+
+canvas.draw_rect(Rect::new(0.0, 0.0, width, 30.0), &line_id_bubble_paint);
+canvas.draw_str_align(
+    "Muni Inbound",
+    (midpoint / 2.0, 23.0),
+    &font,
+    &black_paint,
+    Align::Center,
+);
+canvas.draw_str_align(
+    "Muni Outbound",
+    (midpoint + midpoint / 2.0, 23.0),
+    &font,
+    &black_paint,
+    Align::Center,
+);
+canvas.draw_line((0.0, 30.0), (width, 30.0), &black_paint);
+
+draw_times(inbound_journeys, 0.0, midpoint);
+...
+```
+
+Running this now, we get something that looks (I think) quite serviceable.
+
+![TODO](./render-06.png)
+
+I did do more refinements after this, but I'm not going to discuss them in
+detail in this blog post.
+
+Now that we have the image sorted, making a deployable version of this server is
+just a matter of removing the "cache the data forever" code that's at the top of
+the HTTP handler.
+
+```rust
+async fn get_image() -> eyre::Result<Vec<u8>> {
+    let client = Client::new();
+
+    let response_txt = client.get("http://api.511.org/transit/StopMonitoring?api_key=[your_key]&agency=SF").send().await?.text().await?;
+    let response: StopMonitoringResponse = serde_json::from_str(&response_txt)?;
+    ...
+}
+```
 
 # Fin.
+
+And that's all I'm gonna cover in this one! This is the longest blog post I've
+ever written (it's longer than some of the chapters of [my
+book](https://lilymara.xyz/posts/refactoring-to-rust/)!). This project has been
+in flight for a very long time. The BART-screenshot-powered version of this
+Kindle project was working around February of 2023, and I put the final UI
+polish on the Rust rewrite in January 2024. There are a few things that I didn't
+cover in here because it just seemed like the post was getting long enough as it
+is:
+
+- The caching system that fetched API data continuously in the background so
+  that the HTTP server is very fast
+- Extra pieces of the UI - time in the lower left corner and data cache status
+  in the lower right corner
+- Anti-aliasing
+- Cutting off destination names if they stretch into the departure time area so
+  the strings don't overlap (with gradient!)
+- Setting different grey colors for each of the lines so that they can be
+  slightly more quickly distinguished
+- Making the whole thing config file driven
+
+Something that might not be obvious to people that haven't done this kind of
+writing is that you basically have to re-do the project in slow motion when you
+write a post like this (unless you're writing the blog post as you're
+prototyping, but I wouldn't recommend that). The steps that we took in building
+up the UI were different than the steps that I took when building it myself,
+because it took me a while to figure out the right way to do things. Here are
+some of the intermediate states that I took when building the UI, along with the
+final current state.
+
+{{< img-narrow >}}
+![TODO](./unified-01.png)
+![TODO](./unified-02.png)
+{{</ img-narrow >}}
+
+{{< img-narrow >}}
+![TODO](./unified-03.png)
+![TODO](./unified-04.png)
+{{</ img-narrow >}}
+
+{{< img-narrow >}}
+![TODO](./unified-05.png)
+![TODO](./unified-06.png)
+{{</ img-narrow >}}
+
+Thanks for reading!
+
+<div class="callout">
+	<div class="callout-inner">
+        <div class="callout-header">AD</div>
+        <p>Writing this post was a lot of work. I don't have any tracking, sponsorships, or (real) ads on this website. I just write because I like sharing things with people. If you liked this blog post and you'd like to show your appreciation, please consider making a donation to <a href="https://translifeline.org">Trans Lifeline</a> or <a href="https://www.eqfl.org">Equality Florida</a>. The country is <a href="https://www.erininthemorning.com/p/erins-anti-trans-risk-map-early-legislative">scary</a> right now for trans people, with Florida (and more recently Utah) passing some of the more draconian laws.</p>
+  </div>
+</div>
