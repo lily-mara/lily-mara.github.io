@@ -6,8 +6,6 @@ tags: [project, rust, transit]
 description: "How I built a transit dashboard with Rust, Skia, and an old Kindle"
 ---
 
-- TODO: shrink the images so the page isn't ~100MB
-
 I live in San Francisco, and I don't own a car. This means that I walk or take
 public transit nearly everywhere that I go. There's a lot of ways to find out
 when the next bus/train/tram/trolleybus/cable car/ferry is stopping nearby so
