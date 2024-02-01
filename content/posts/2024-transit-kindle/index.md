@@ -7,8 +7,6 @@ description: "How I built a transit dashboard with Rust, Skia, and an old Kindle
 ---
 
 - TODO: shrink the images so the page isn't ~100MB
-- TODO: double-check code samples to make sure I didn't include my API key
-- TODO: I need a section on rotating the rust-generated PNG images for the Kindle
 
 I live in San Francisco, and I don't own a car. This means that I walk or take
 public transit nearly everywhere that I go. There's a lot of ways to find out
@@ -1474,6 +1472,31 @@ If we run this server and visit the image page in our browser, we should see our
 beautiful schedule!
 
 ![TODO](./render-04.png)
+
+If we try to display this on our Kindle by fetching it via `wget` and displaying
+it via `eips`, we'll be disappointed to see that the image is rotated and cut
+off. Of course the Kindle is designed to be held in portrait orientation, so we
+need to manually rotate our image to landscape orientation if we want it to
+display correctly. This can be done by applying a rotation matrix before we
+begin drawing.
+
+```rust
+let mut bitmap = Bitmap::new();
+ensure!(bitmap.set_info(
+    // Notice that the dimensions we're using for width and height have been flipped here
+    &ImageInfo::new((758, 1024), ColorType::Gray8, AlphaType::Unknown, None),
+    None
+));
+bitmap.alloc_pixels();
+
+let canvas = Canvas::from_bitmap(&bitmap, None).ok_or(eyre!("skia canvas"))?;
+// The point we're rotating around is (width/2, width/2)
+canvas.rotate(90.0, Some(Point::new(379.0, 379.0)));
+```
+
+This should return a rotated image that displays correctly on the Kindle.
+Images in the rest of this post will be displayed in landscape orientation for
+ease of viewing.
 
 Now that we have something that works end-to-end, let's improve the layout of
 our schedule a bit.
