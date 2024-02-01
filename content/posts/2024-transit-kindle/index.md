@@ -1,7 +1,6 @@
 ---
 title: "Never Missing the Train Again, Thanks to Rust"
-date: 2024-01-08T17:51:57-08:00
-draft: true
+date: 2024-01-31T00:00:00-08:00
 tags: [project, rust, transit]
 description: "How I built a transit dashboard with Rust, Skia, and an old Kindle"
 ---
@@ -30,7 +29,7 @@ I was first inspired to build this project after reading [Matt Healy's 2021 blog
 post](https://matthealy.com/kindle) on building a smart home display with a
 Kindle. Matt used an old Kindle to display things like weather, calendar events,
 meal plans, and house cleaning schedules. I figured I could probably adapt his
-guide and make myself an always-available display of upcoming transit departures
+guide and make myself an always-available display of upcoming transit arrival
 at the stops nearest to my apartment. I also saw [Ben Borgers'
 post](https://ben.page/eink) about using an old Nook as an iCloud photo frame.
 These devices are super cool, and can be had for quite cheap. I had a few old
@@ -47,7 +46,7 @@ them for something productive again.
 <div class="callout">
 	<div class="callout-inner">
         <div class="callout-header">GOAL</div>
-        <p>Display upcoming transit departure times on a Kindle</p>
+        <p>Display upcoming transit arrival times on a Kindle</p>
   </div>
 </div>
 
@@ -209,7 +208,7 @@ naively reads image data out of the PNG blob and assumes it's an 8-bit image. It
 cut off the 1/3 width image partway through the display because the width
 metadata on the image made the Kindle think it should only render it over 1/3 of
 the screen. The 1/3 width data, full-width metadata image works but looks poor
-because 1/3 of the resolution is being sacrificed. After using `convert` to turn
+because 2/3 of the resolution is being sacrificed. After using `convert` to turn
 my screenshot into an 8-bit PNG image, it displays correctly on the Kindle.
 
 ![photo of a kindle displaying the BART civic center status page, the image appears crisp and readable, but some of the text is cut off of the right edge of the display.](./just-img-09.jpeg)
@@ -238,7 +237,7 @@ something that will provide us with an endless stream of _useful_ images.
 
 # Serve _useful_ images
 
-Remember that our actual goal here is to display transit departure times, which
+Remember that our actual goal here is to display transit arrival times, which
 aren't very helpful if you post them once and they never change. We need to
 build something capable of generating Kindle-compatible screenshots if we want
 this project to actually be useful. Since there was already a UI provided by
@@ -247,6 +246,20 @@ Puppeteer to take a screenshot of the part of the page I cared about, tweaked it
 to the size and color depth for the Kindle display, and returned it via an HTTP
 endpoint. I put the server on a Raspberry Pi and set the Kindle up to fetch
 images every minute via cron.
+
+```sh
+# On Kindle
+
+# Add the wget/eips commands from above
+$ vi /usr/bin/refresh-image
+$ chmod +x /usr/bin/refresh-image
+
+# Add the line `* * * * * /usr/bin/refresh-image`
+$ vi /etc/crontab/root
+
+# Restart the cron daemon so it runs our script
+$ initctl restart cron
+```
 
 The Node.js version is very similar to the code that Matt created for his blog
 post, with one notable exception. Since the BART page had auto-refreshing built
@@ -276,7 +289,7 @@ operators. The list of modes of transit I listed at the top of the document
 wasn't a joke, we do have busses, trains, trams, trolley busses, cable cars, and
 ferries, and multiple agencies that operate most of those different forms of
 transit. At first my system only reported on BART, the regional rapid transit
-system. Eventually though, I wanted to get departure times for the other nearby
+system. Eventually though, I wanted to get arrival times for the other nearby
 transit provider.
 
 The San Francisco Municipal Railway (MUNI) operates trolley busses, gas busses,
@@ -284,7 +297,7 @@ light rail, and cable cars in San Francisco. Next to my apartment I had bus
 stops and light rail stops that I frequently used and wanted to get the status
 of. I thought I could adapt my Node.js screenshot tool to pull data on the MUNI
 stops near me too, and I was somewhat successful at first. Like BART, MUNI has a
-page where they report on the time to departures of various lines at all of
+page where they report on the time to arrival of various lines at all of
 their stops across the city.
 
 ![screenshot of MUNI church st station status page. it shows upcoming K, M, and S trains.](./muni-00.png)
@@ -350,7 +363,7 @@ source the data for stops. I don't particularly want to parse it out of the HTML
 pages that BART & MUNI provide, and thankfully there's an API provided by 511,
 the Bay Area's transit information system. Their [Stop Monitoring
 API](https://511.org/open-data/transit) will give us exactly what we need - the
-estimated time of upcoming departures at any transit stop in the Bay Area.
+estimated time of upcoming arrivals at any transit stop in the Bay Area.
 
 Next, since we're not relying on a browser engine to render the display, we will
 be using a 2D graphics library to render a PNG directly. This should have a much
@@ -374,13 +387,13 @@ with a lot less of the bloat from Puppeteer.
 </div>
 
 There are three main components of this project. First, we'll have to find the
-upcoming transit departure times. Next, we need to be able to take these
-departure times and render them as an 8-bit PNG image. Finally (and probably the
+upcoming transit arrival times. Next, we need to be able to take these
+arrival times and render them as an 8-bit PNG image. Finally (and probably the
 simplest) is an HTTP server which can return the generated PNG image data.
 
 # Getting the Data
 
-Let's start by making sure we can pull the upcoming transit departure times from
+Let's start by making sure we can pull the upcoming transit arrival times from
 511.org and write them out to the console. We'll start by making a new project
 with `cargo new` and defining our dependencies.
 
@@ -444,13 +457,13 @@ at a time. We're going to be pulling data for the San Francisco Municipal
 Railway, which has the agency code `SF` (you can find the agency ID for other
 transit agencies by using the
 `https://api.511.org/transit/gtfsoperators?api_key=[your_key]` endpoint for a
-list of all agencies and their IDs). The StopMonitoring endpoint returns
-upcoming departure times for _all stops_ of the given transit agency, which can
-be a lot of data, but the 511.org APIs have a relatively low rate limit (60
-requests per hour!) so if we expect to be able to show real-time status, we
-can't fetch times one stop at a time. Unfortunately, as far as I can tell, there
-is no way to fetch data on multiple stops at once other than fetching data for
-_all_ stops.
+list of all agencies and their IDs). The StopMonitoring endpoint either returns
+upcoming arrival times for a single stop, or _all stops_ of the given transit
+agency, which can be a lot of data! The 511.org APIs have a relatively low rate
+limit (60 requests per hour!) so if we expect to be able to show real-time
+status, we can't fetch times one stop at a time. Unfortunately, as far as I can
+tell, there is no way to fetch data on multiple stops at once other than
+fetching data for _all_ stops.
 
 Ok, let's open `main.rs` and grab all of the upcoming stop times for SF MUNI!
 
@@ -541,7 +554,7 @@ understand the structure of the data that's coming back. If we extract the outer
 
 Now obviously, there's a whole lot of information in this response. Let's try
 trimming this down to what we might need in order to render our display.
-Remember that we're trying to display the upcoming departure times for a few
+Remember that we're trying to display the upcoming arrival times for a few
 lines at a few known stops. We'll filter out all of the fields that aren't
 necessary for this purpose so we can focus on what counts.
 
@@ -795,7 +808,7 @@ We should get an output file that looks something like this:
 At the time I ran this, I got about 20 upcoming arrivals back. This is going to
 be much more manageable than the 26k arrivals that we were initially looking at.
 
-Let's see if we can print out the departures in order of soonest to latest for
+Let's see if we can print out the arrivals in order of soonest to latest for
 each direction.
 
 ```rust
@@ -1105,7 +1118,7 @@ bus/train's next arrival times, and in the middle of the image to divide the two
 columns. It's all just loops and setting text on the image. Running this
 program, we get a functional (if quite stale) display of times.
 
-![display with two columns, with rows in each column for transit lines. each row displays a line id, followed by a destination name, followed by next departure times. all text is left-aligned and all of the row ids are vertically aligned with each other row-to-row, all the destinations are aligned, and all the times are aligned. it appears as if it were made in a spreadsheet application](./render-01.png)
+![display with two columns, with rows in each column for transit lines. each row displays a line id, followed by a destination name, followed by next arrival times. all text is left-aligned and all of the row ids are vertically aligned with each other row-to-row, all the destinations are aligned, and all the times are aligned. it appears as if it were made in a spreadsheet application](./render-01.png)
 
 Now that we're displaying an image, let's see if we can connect our API fetching
 code to the PNG generation code.
@@ -1369,7 +1382,7 @@ let draw_times = |lines_destinations_to_journeys: &HashMap<
 After this, we can re-run the program and get a much more legible (if quite
 bland and odd) timetable.
 
-![display with two columns, with rows in each column for transit lines. each row displays a line id, followed by a destination name, followed by next departure times. line ids and destinations are left-aligned, departure times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, all the destinations are aligned, and all the times are aligned. it appears as if it were made in a spreadsheet application, but by someone who cared slightly](./render-03.png)
+![display with two columns, with rows in each column for transit lines. each row displays a line id, followed by a destination name, followed by next arrival times. line ids and destinations are left-aligned, arrival times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, all the destinations are aligned, and all the times are aligned. it appears as if it were made in a spreadsheet application, but by someone who cared slightly](./render-03.png)
 
 This isn't a great looking timetable, and it's not what the finished product is
 going to look like, but it is what we're going to start out with. Now that we
@@ -1502,7 +1515,7 @@ our schedule a bit.
 <div class="callout callout-success">
 	<div class="callout-inner">
         <div class="callout-header">GOAL RE-ACHIEVED!</div>
-        <p>We now have an HTTP server that can render upcoming transit departure times in a format that our Kindle can digest. It's important to recognize that the project is perfectly usable as it is right now (if you remove the "cache all the data forever" bit), and all of the further work that we're going to look at is <em>enhancement</em>. Something doesn't need to be beautiful to be functional, but it is nice when things are beautiful.</p>
+        <p>We now have an HTTP server that can render upcoming transit arrival times in a format that our Kindle can digest. It's important to recognize that the project is perfectly usable as it is right now (if you remove the "cache all the data forever" bit), and all of the further work that we're going to look at is <em>enhancement</em>. Something doesn't need to be beautiful to be functional, but it is nice when things are beautiful.</p>
   </div>
 </div>
 
@@ -1585,7 +1598,7 @@ canvas.draw_str(destination, (bounds.right + 15.0, y), &font, &black_paint);
 
 These two small changes produce something that already looks leagues better.
 
-![display with two columns, with rows in each column for transit lines. each row displays a line id inside of a light grey bubble, followed by a destination name, followed by next departure times. line ids and destinations are left-aligned, departure times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, and all the times are aligned. it doesn't really look like a spreadsheet anymore](./render-05.png)
+![display with two columns, with rows in each column for transit lines. each row displays a line id inside of a light grey bubble, followed by a destination name, followed by next arrival times. line ids and destinations are left-aligned, arrival times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, and all the times are aligned. it doesn't really look like a spreadsheet anymore](./render-05.png)
 
 The last change that we'll look at in detail here is to add column headers to
 the page.
@@ -1624,7 +1637,7 @@ draw_times(inbound_journeys, 0.0, midpoint);
 
 Running this now, we get something that looks (I think) quite serviceable.
 
-![display with two columns with a header row. the left column is labeled "Muni Inbound" and the right column is labeled "Muni Outbound". There are rows in each column for transit lines. each row displays a line id inside of a light grey bubble, followed by a destination name, followed by next departure times. line ids and destinations are left-aligned, departure times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, and all the times are aligned.](./render-06.png)
+![display with two columns with a header row. the left column is labeled "Muni Inbound" and the right column is labeled "Muni Outbound". There are rows in each column for transit lines. each row displays a line id inside of a light grey bubble, followed by a destination name, followed by next arrival times. line ids and destinations are left-aligned, arrival times are right-aligned and all of the row ids are vertically aligned with each other row-to-row, and all the times are aligned.](./render-06.png)
 
 I did do more refinements after this, but I'm not going to discuss them in
 detail in this blog post.
@@ -1659,11 +1672,14 @@ is:
 - Extra pieces of the UI - time in the lower left corner and data cache status
   in the lower right corner
 - Anti-aliasing
-- Cutting off destination names if they stretch into the departure time area so
+- Cutting off destination names if they stretch into the arrival time area so
   the strings don't overlap (with gradient!)
 - Setting different grey colors for each of the lines so that they can be
   slightly more quickly distinguished
 - Making the whole thing config file driven
+- Error-handling - the real version of the server will return a PNG file
+  displaying the error and it's `.source()` chain, so that it's clearly
+  visible on the Kindle
 
 Something that might not be obvious to people that haven't done this kind of
 writing is that you basically have to re-do the project in slow motion when you
@@ -1685,11 +1701,14 @@ final current state.
 {{</ img-narrow >}}
 
 {{< img-narrow >}}
-![two-column schedule, with destination name text that appears to fade behind the departure times if it is too long, and a footer that displays the time and the word "MUNI" followed by a check mark](./unified-05.png)
+![two-column schedule, with destination name text that appears to fade behind the arrival times if it is too long, and a footer that displays the time and the word "MUNI" followed by a check mark](./unified-05.png)
 ![two-column schedule, with shorter destination name text](./unified-06.png)
 {{</ img-narrow >}}
 
-Thanks for reading!
+The final (simplified) code for the server we built together is on my github
+[here](https://github.com/lily-mara/transit-kindle-simplified), and the server
+that I actually use to power the Kindle on my wall is
+[here](https://github.com/lily-mara/transit-kindle). Thanks for reading!
 
 <div class="callout">
 	<div class="callout-inner">
