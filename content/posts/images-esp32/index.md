@@ -862,7 +862,7 @@ Holy shit it actually compiles and runs! It took me a few days to get to this po
 Oh. The display is not red. In fact it's completely blank, and there's no hints in the logs to indicate what might be happening. At this point I took an inventory of the display pinout to see what I had used and if there were any spare pins left. I had used the SDO (MOSI), SCKL, CS, DC, and RST pins, but the BL pin was as of yet unused. I wondered what this signal might be, and reasoned that BL might just be a backlight. I hooked up a `PinDriver` to it and turned it on to see if this would give me my glorious red screen.
 
 ```rust
-let mut bl = PinDriver::input_output_od(unsafe { Gpio5::new() })?;
+let mut bl = PinDriver::input_output_od(unsafe { Gpio4::new() })?;
 bl.set_high()?;
 ```
 
