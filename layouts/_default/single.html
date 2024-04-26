@@ -3,7 +3,7 @@
 	<article>
 		<div class="title" id="PageTitleBox">
 			<h1 class="title">{{ .Title }}</h1>
-			<div class="meta">Posted on {{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT ({{.WordCount}} words)</span> {{ end }} {{partial "reading-time.html" .}}</div>
+			<div class="meta">Posted on {{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT ({{.WordCount}} words)</span> {{ end }} {{partial "reading-time.html" .}} {{partial "open-heart.html" .}}</div>
 			<div class="meta"></div>
 		</div>
 		{{ if isset .Params "tldr" }}
@@ -35,6 +35,10 @@
 			</nav>
 			{{ end }}
 			{{ end }}
+		</div>
+
+		<div class="open-heart-container">
+			{{partial "open-heart.html" .}}
 		</div>
 
 		<div class="callout">

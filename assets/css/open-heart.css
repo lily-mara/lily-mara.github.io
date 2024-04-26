@@ -1,0 +1,32 @@
+/* open heart protocol */
+.open-heart-container {
+  margin-bottom: 1em;
+}
+
+open-heart {
+  background-color: #fff0f7;
+  color: rgb(132, 132, 132);
+  padding: 2px 4px;
+  border-radius: 4px;
+
+  border: 0;
+  margin-right: 1em;
+}
+open-heart:not([disabled]):hover,
+open-heart:not([disabled]):focus {
+  background-color: hotpink;
+  color: black;
+  border: 0;
+  cursor: pointer;
+  opacity: 1;
+}
+open-heart[disabled] {
+  cursor: not-allowed;
+}
+open-heart[count]:not([count="0"])::after {
+  content: " " attr(count);
+}
+
+open-heart[count="0"]::after {
+  content: " Like this post";
+}
