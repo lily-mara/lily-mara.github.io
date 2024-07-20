@@ -1,5 +1,5 @@
 ---
-title: "Technoelitism"
+title: "Technoelitism and the IndieWeb movement"
 date: 2024-07-20T21:46:24-07:00
 ---
 
