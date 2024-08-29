@@ -36,7 +36,13 @@ I've thought about adding WebMention or Microformats to my site at times, but I 
 
 > I think when I decided that I wanted to get ”involved” in the IndieWeb community, I did assume that I was doing it just by nature of having a personal website. Most of the microformat/WebMention stuff seems like a way to get access to the dopamine hits of vitality/appreciation that you’re likely to miss out on by virtue of de-platforming yourself. I never really put much effort into those types of things. If we want to remove ourselves from the “addiction web,” as I think we should, we should not strive to re-implement their patterns. I only very briefly had comments on my website, I feel like I get better responses via email (though I don’t receive many). To the extent to which that kind of thing is “actually” what IndieWeb is about, I suppose I don’t actually align with the movement.
 
-I'm not sure how much more on this I have to say. The point that I made in my previous post "the IndieWeb community should be focused on better on-ramps for non-technical people" stands, albiet perhaps "the IndieWeb community should" now becomes "some community should." If there is a movement to get people involved in self-publishing on the internet that doesn't prioritize computer-readible, corporate-social-media-syndication-based publishing over human intrigue and the sharing between real people, I want to know about it. That's the kind of movement that I think has the power to get us moving away from some of the mess that we're in, and that's the kind of movement that I want to be involved in.
+I do think we should strive to create things that are wholly separate from the "addition web," not just in control but form. We have been wired to fill time, can we fill the time with genuine connections and human thought rather than the algorithms of big tech? I agree with Jenny Odell, most people would not be satiated by just turning off the attention/addiction machine forever, we need to give them somewhere else to put it, somewhere better.
+
+> What is needed, then, is not a “once-and-for-all” type of quitting but ongoing training: the ability not just to withdraw attention, but to invest it somewhere else, to enlarge and proliferate it, to improve its acuity.
+>
+> [How to Do Nothing], Jenny Odell
+
+The point that I made in my previous post "the IndieWeb community should be focused on better on-ramps for non-technical people" stands, albiet perhaps "the IndieWeb community should" now becomes "some community should." If there is a movement to get people (especially non-technical people!) involved in self-publishing on the internet that doesn't prioritize computer-readible, corporate-social-media-syndication-based publishing over human intrigue and the sharing between real people, I want to know about it. That's the kind of movement that I think has the power to get us moving away from some of the mess that we're in, and that's the kind of movement that I want to be involved in.
 
 [Technoelitism and the IndieWeb Movement]: /posts/2024-technoelitism/
 [IndieWeb's 3 Body Problem]: https://so1o.xyz/blog/3-body-problem
@@ -45,3 +51,4 @@ I'm not sure how much more on this I have to say. The point that I made in my pr
 [Matthew]: https://starbreaker.org
 [Smaller]: https://minutestomidnight.co.uk/blog/smaller/
 [Simone]: https://minutestomidnight.co.uk/
+[How to Do Nothing]: https://www.penguinrandomhouse.com/books/600671/how-to-do-nothing-by-jenny-odell/
