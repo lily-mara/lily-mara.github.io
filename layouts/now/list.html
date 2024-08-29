@@ -2,13 +2,14 @@
 <h1>Entries tagged - "{{ .Data.Term }}"</h1>
 {{ else }}
 <h1 class="page-title">
-  /now - <a href="https://nownownow.com/about">motivation</a>
+    /now - <a href="https://nownownow.com/about">motivation</a>
 </h1>
 {{ end }}
 <!--  -->
 {{- range ( .Data.Pages | first 1 ) }}
 <h2>
-  {{.Title}} {{ if .Draft }} <span class="draft-label">DRAFT</span> {{ end }}
+    {{dateFormat "January 2006" .Date}} {{ if .Draft }}
+    <span class="draft-label">DRAFT</span> {{ end }}
 </h2>
 
 <section class="body">{{ .Content }}</section>
@@ -18,15 +19,14 @@
 
 <h2>Archive</h2>
 <ul class="posts">
-  {{- range (.Data.Pages) -}}
-  <li class="post">
-    <a href="{{ .RelPermalink }}">{{.Title}}</a>
-    <span class="meta"
-      >{{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }}
-      <span class="draft-label">DRAFT</span> {{ end }}</span
-    >
-  </li>
-  {{- end -}}
+    {{- range (after 1 .Data.Pages) -}}
+    <li class="post">
+        <a href="{{ .RelPermalink }}">{{dateFormat "January 2006" .Date}}</a>
+        {{ if .Draft }}
+        <span class="meta"><span class="draft-label">DRAFT</span></span> {{ end
+        }}
+    </li>
+    {{- end -}}
 </ul>
 
 {{ end }}

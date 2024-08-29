@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+    {{ partial "header.html" . }}
+    <body>
+        <div class="content">
+            {{ partial "head.html" . }} {{ $pages := where (where
+            .Site.RegularPages "Params.hidden" "ne" true) "Type" "in"
+            .Site.Params.mainSections }}
+
+            <main class="list">
+                <div class="site-description">
+                    <p>
+                        Hi, I'm <a href="/pages/about">Lily!</a> I write Rust
+                        software and I use this website to write about software,
+                        conference talks that I've given, and my life.
+                    </p>
+                </div>
+
+                {{ range (first 1 $pages) }}
+                <h1>
+                    Most recent blog post -
+                    <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                </h1>
+                {{ template "partials/pagedescription.html" . }} {{end}}
+
+                <!--  -->
+
+                {{- range ( where .Site.Pages "Section" "now" | first 1 ) }}
+                <h1>
+                    Most recent <a href="/now">/now</a>
+                    ({{ dateFormat "January 2006" .Date }})
+                </h1>
+
+                <section class="body">{{ .Content }}</section>
+                {{- end}}
+
+                <h1>Recent Posts</h1>
+                <ul class="posts">
+                    {{ range (first 5 (after 1 $pages)) }}
+                    <li class="post">
+                        <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                        <span class="meta"
+                            >{{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }}
+                            <span class="draft-label">DRAFT</span> {{ end
+                            }}</span
+                        >
+                    </li>
+                    {{ end }}
+                </ul>
+                <a href="/posts/">View All →</a>
+            </main>
+            {{ partial "footer.html" . }}
+        </div>
+    </body>
+</html>
