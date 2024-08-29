@@ -12,12 +12,17 @@
 			{{ .Params.tldr }}
 		</div>{{ end }}
 
-		{{ if gt .WordCount 400  }}
-			<details class="TableOfContents">
-				<summary>Contents</summary>
-				{{ .TableOfContents }}
-			</details>
-		{{ end }}
+		{{ with .TableOfContents }}
+            <!-- the variable is set -->
+            {{ if ne . "<nav id=\"TableOfContents\"></nav>" }}
+                <!-- the variable is not an empty navigation -->
+                <details class="TableOfContents">
+    				<summary>Contents</summary>
+    				{{ . }}
+    			</details>
+                <!-- it's a dot because we are inside of a `with` -->
+            {{ end }}
+        {{ end }}
 
 		<section class="body">
 			{{ .Content }}
