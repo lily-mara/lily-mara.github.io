@@ -16,38 +16,45 @@
                     </p>
                 </div>
 
-                {{ range (first 1 $pages) }}
-                <h1>
-                    Most recent blog post -
-                    <a href="{{ .RelPermalink }}">{{.Title}}</a>
-                </h1>
-                {{ template "partials/pagedescription.html" . }} {{end}}
+                <div class="homepage-box">
+                    {{ range (first 1 $pages) }}
+                    <h1>
+                        Most recent blog post -
+                        <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                    </h1>
+                    {{ template "partials/pagedescription.html" . }}
+                    <a href="{{ .RelPermalink }}">Read more →</a>
+                    {{end}}
+
+                    <h1>More posts</h1>
+                    <ul class="posts">
+                        {{ range (first 5 (after 1 $pages)) }}
+                        <li class="post">
+                            <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                            <span class="meta"
+                                >{{ dateFormat "Jan 2, 2006" .Date }}{{ if
+                                .Draft }}
+                                <span class="draft-label">DRAFT</span> {{ end
+                                }}</span
+                            >
+                        </li>
+                        {{ end }}
+                    </ul>
+                    <a href="/posts/">View All →</a>
+                </div>
 
                 <!--  -->
 
-                {{- range ( where .Site.Pages "Section" "now" | first 1 ) }}
-                <h1>
-                    Most recent <a href="/now">/now</a>
-                    ({{ dateFormat "January 2006" .Date }})
-                </h1>
+                <div class="homepage-box">
+                    {{- range ( where .Site.Pages "Section" "now" | first 1 ) }}
+                    <h1>
+                        Most recent <a href="/now">/now</a>
+                        ({{ dateFormat "January 2006" .Date }})
+                    </h1>
 
-                <section class="body">{{ .Content }}</section>
-                {{- end}}
-
-                <h1>Recent Posts</h1>
-                <ul class="posts">
-                    {{ range (first 5 (after 1 $pages)) }}
-                    <li class="post">
-                        <a href="{{ .RelPermalink }}">{{.Title}}</a>
-                        <span class="meta"
-                            >{{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }}
-                            <span class="draft-label">DRAFT</span> {{ end
-                            }}</span
-                        >
-                    </li>
-                    {{ end }}
-                </ul>
-                <a href="/posts/">View All →</a>
+                    <section class="body">{{ .Content }}</section>
+                    {{- end}}
+                </div>
             </main>
             {{ partial "footer.html" . }}
         </div>

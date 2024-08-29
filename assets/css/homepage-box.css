@@ -1,0 +1,13 @@
+.homepage-box {
+    border-color: hotpink;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 1em;
+
+    margin-bottom: 2em;
+    padding: 1em;
+
+    :first-child {
+        margin-top: 0;
+    }
+}
