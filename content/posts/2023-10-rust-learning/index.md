@@ -3,6 +3,9 @@ title: "Rust Learning Resources"
 date: 2023-10-13T00:00:00-00:00
 tags: [rust]
 description: "Thoughts and recommendations on resources for people looking to learn Rust"
+slug: rust-learning
+aliases:
+- /posts/2023-rust-learning
 ---
 
 I've used Rust as a primary language since 2019, and I've been managing

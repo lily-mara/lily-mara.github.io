@@ -20,6 +20,10 @@ customcss = [
 mode = "light"
 favicon = "/favicon.png"
 
+[permalinks]
+    [permalinks.page]
+        posts = '/posts/:year/:month/:slug/'
+
 [[menu.main]]
 name = "Buy my Book!"
 url = "https://www.manning.com/books/refactoring-to-rust?utm_source=mara&utm_medium=affiliate&utm_campaign=book_mara_refactoring_1_6_21&a_aid=mara&a_bid=eedce54d"

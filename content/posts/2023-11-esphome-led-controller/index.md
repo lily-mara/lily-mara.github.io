@@ -3,6 +3,9 @@ title: "ESPHome LED Controller"
 description: "when out-of-the-box isn't good enough"
 date: 2023-11-09T00:00:00-08:00
 tags: [project, embedded, home-automation]
+slug: esphome-led-controller
+aliases:
+- /posts/2023-esphome-led-controller
 ---
 
 I was recently given a very thoughtful gift, a custom LED sign from [Custom

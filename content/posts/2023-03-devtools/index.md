@@ -1,6 +1,9 @@
 ---
 title: "Devtools I Use"
 date: 2023-03-06T10:47:56-08:00
+slug: devtools
+aliases:
+- /posts/devtools
 ---
 
 Thanks to the fact that I sometimes share coding videos on my [YouTube

@@ -3,6 +3,9 @@ title: "Wayfinding"
 date: 2023-09-27T00:00:00-00:00
 tags: [transit, society]
 description: "A rant"
+slug: wayfinding
+aliases:
+- /posts/2023-wayfinding
 ---
 
 I generally like to leave open the possibility that I'm wrong. I try to avoid

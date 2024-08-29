@@ -3,6 +3,9 @@ title: "A Kafkaesque Series of Events - YOW!"
 date: 2022-12-05T00:00:00-00:00
 tags: [talk]
 description: "How OneSignal built out highly concurrent Kafka consumers and the customer that brought it all down with one bad assumption."
+slug: yow
+aliases:
+- /posts/2022-yow
 ---
 
 ![Photo of Lily standing in front of a projector screen](./speaking.jpg)

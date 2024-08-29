@@ -2,6 +2,9 @@
 title: "Blazing Fast, Minimal Change - QCon London"
 date: 2022-04-06T00:00:00-00:00
 tags: [talk]
+slug: qcon-london
+aliases:
+- /posts/2022-qcon-london
 ---
 
 ![Photo of Lily speaking at QCon London](./speaking.jpg)

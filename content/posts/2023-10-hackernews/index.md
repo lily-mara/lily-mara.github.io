@@ -3,6 +3,9 @@ title: "hackernews.lilymara.xyz"
 date: 2023-10-28T11:14:21-07:00
 description: "Top 30 posts on Hackernews, updated daily, get the links without the comment section"
 tags: [project]
+slug: hackernews
+aliases:
+- /posts/2023-hackernews
 ---
 
 I think that Hackernews is a consistent source of interesting articles to read,
