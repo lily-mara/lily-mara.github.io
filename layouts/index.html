@@ -17,6 +17,24 @@
                 </div>
 
                 <div class="homepage-box">
+                    <h1>Most recent <a href="/clips">clippings</a></h1>
+                    <ul class="posts">
+                        {{- range ( where .Site.RegularPages "Section" "clips" |
+                        first 5 ) }}
+                        <li class="post">
+                            <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                            <span class="meta"
+                                >{{ dateFormat "Jan 2, 2006" .Date }}{{ if
+                                .Draft }}
+                                <span class="draft-label">DRAFT</span> {{ end
+                                }}</span
+                            >
+                        </li>
+                        {{- end}}
+                    </ul>
+                </div>
+
+                <div class="homepage-box">
                     {{ range (first 1 $pages) }}
                     <h1>
                         Most recent blog post -
