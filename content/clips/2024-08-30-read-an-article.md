@@ -8,6 +8,6 @@ tags: [internet, humor]
 >
 > in 9 simple steps
 
-This evokes something similar to a rage-inducing "every modern website" website that takes you through all of these annoying steps and then doesn't show you the article in the end. I can't for the life of me find that right now, but I'll post it if I come across it.
+This evokes something similar to [how-i-experience-web-today.com](/clips/2024-08-30-how-i-experience-web), which actually takes you interactively through all of the terrible steps involved in modern web browsing.
 
 https://www.marginalia.nu/log/95_how_to_read/
