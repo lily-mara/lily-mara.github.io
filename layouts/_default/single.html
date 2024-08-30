@@ -3,8 +3,11 @@
 	<article>
 		<div class="title" id="PageTitleBox">
 			<h1 class="title">{{ .Title }}</h1>
+
+			{{ if ne .Type "pages" }}
 			<div class="meta">Posted on {{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT ({{.WordCount}} words)</span> {{ end }} {{partial "reading-time.html" .}} {{partial "open-heart.html" .}}</div>
 			<div class="meta"></div>
+			{{end}}
 		</div>
 		{{ if isset .Params "tldr" }}
 		<div class="tldr">
@@ -29,7 +32,7 @@
 		</section>
 
 		<div class="post-tags">
-			{{ if ne .Type "page" }}
+			{{ if ne .Type "pages" }}
 			{{ if gt .Params.tags 0 }}
 			<nav class="nav tags">
 				<ul class="tags">
@@ -42,6 +45,7 @@
 			{{ end }}
 		</div>
 
+		{{ if ne .Type "pages" }}
 		<div class="open-heart-container">
 			{{partial "open-heart.html" .}}
 		</div>
@@ -54,6 +58,8 @@
 				</p>
 			</div>
 		</div>
+		{{end}}
+
 	</article>
 </main>
 

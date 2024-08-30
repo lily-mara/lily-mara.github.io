@@ -55,7 +55,7 @@ url = "https://www.youtube.com/@lily-mara"
 [[params.social]]
 name = "RSS"
 icon = "rss"
-url = "/index.xml"
+url = "/pages/feeds/"
 
 [[params.social]]
 name = "Email"
