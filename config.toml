@@ -17,6 +17,8 @@ customcss = [
     "css/heading.css",
     "css/open-heart.css",
     "css/homepage-box.css",
+    "css/font.css",
+    "css/list.css",
 ]
 mode = "light"
 favicon = "/favicon.png"

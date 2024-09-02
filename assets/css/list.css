@@ -1,0 +1,11 @@
+ul:not(.tags) > li::before {
+    content: "" !important;
+}
+
+ul:not(.tags) > li {
+    list-style: disc !important;
+}
+
+ul:not(.tags) li {
+    text-indent: 0 !important;
+}
