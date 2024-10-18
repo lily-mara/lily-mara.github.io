@@ -19,13 +19,14 @@ customcss = [
     "css/homepage-box.css",
     "css/font.css",
     "css/list.css",
+    "css/code.css",
 ]
 mode = "light"
 favicon = "/favicon.png"
 
 [permalinks]
-    [permalinks.page]
-        posts = '/posts/:year/:month/:slug/'
+[permalinks.page]
+posts = '/posts/:year/:month/:slug/'
 
 [[menu.main]]
 name = "Buy my Book!"
