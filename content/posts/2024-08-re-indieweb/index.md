@@ -3,6 +3,7 @@ title: "Re: Technoelitism and the IndieWeb Movement"
 description: "Wherein I learn that the movement isn't really what I thought it was."
 date: 2024-08-28T10:25:55+02:00
 slug: re-indieweb
+featured: 4
 ---
 
 In the past few weeks, I've seen some blog posts of a very similar vein to my recent post _[Technoelitism and the IndieWeb Movement]_. It seems I'm not the only one with some critical thoughts about this movement and the goals it both claims to have and actually seems to express. I realized while surveying some of these posts that I actually had some major flaws in my assumptions about what the IndieWeb movement actually is, what it actually cares about, and the correction of these assumptions has only served to further cement my beliefs that the movement leaves something to be desired. Let's start with my incorrect assumptions.

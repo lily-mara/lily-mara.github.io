@@ -3,9 +3,11 @@
     {{ partial "header.html" . }}
     <body>
         <div class="content">
-            {{ partial "head.html" . }} {{ $pages := where (where
-            .Site.RegularPages "Params.hidden" "ne" true) "Type" "in"
-            .Site.Params.mainSections }}
+            {{ partial "head.html" . }}
+
+            <!--  -->
+            {{ $all_pages := where .Site.RegularPages "Params.hidden" "ne" true
+            }}
 
             <main class="list">
                 <div class="site-description">
@@ -19,8 +21,8 @@
                 <div class="homepage-box">
                     <h1>Most recent <a href="/clips">clippings</a></h1>
                     <ul class="posts">
-                        {{- range ( where .Site.RegularPages "Section" "clips" |
-                        first 5 ) }}
+                        {{- range ( where $all_pages "Section" "clips" | first 5
+                        ) }}
                         <li class="post">
                             <a href="{{ .RelPermalink }}">{{.Title}}</a>
                             <span class="meta"
@@ -35,19 +37,43 @@
                     <a href="/clips/">View All →</a>
                 </div>
 
+                {{ $recent_posts := where $all_pages "Section" "posts" }}
+                <!--  -->
+                {{ $featured_posts := sort (where (where $all_pages "Section"
+                "posts") "Params.featured" "ne" nil) "Params.featured" "asc" }}
                 <div class="homepage-box">
-                    {{ range (first 1 $pages) }}
+                    {{ range (first 1 $recent_posts) }}
                     <h1>
                         Most recent blog post -
                         <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                        <span class="meta"
+                            >{{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }}
+                            <span class="draft-label">DRAFT</span> {{ end
+                            }}</span
+                        >
                     </h1>
                     {{ template "partials/pagedescription.html" . }}
                     <a href="{{ .RelPermalink }}">Read more →</a>
                     {{end}}
 
+                    <h1>Featured Blog Posts</h1>
+                    <ul class="posts">
+                        {{ range (first 5 $featured_posts) }}
+                        <li class="post">
+                            <a href="{{ .RelPermalink }}">{{.Title}}</a>
+                            <span class="meta"
+                                >{{ dateFormat "Jan 2, 2006" .Date }}{{ if
+                                .Draft }}
+                                <span class="draft-label">DRAFT</span> {{ end
+                                }}</span
+                            >
+                        </li>
+                        {{ end }}
+                    </ul>
+
                     <h1>More posts</h1>
                     <ul class="posts">
-                        {{ range (first 5 (after 1 $pages)) }}
+                        {{ range (first 5 (after 1 $recent_posts)) }}
                         <li class="post">
                             <a href="{{ .RelPermalink }}">{{.Title}}</a>
                             <span class="meta"
@@ -61,8 +87,6 @@
                     </ul>
                     <a href="/posts/">View All →</a>
                 </div>
-
-                <!--  -->
 
                 <div class="homepage-box">
                     {{- range ( where .Site.Pages "Section" "now" | first 1 ) }}

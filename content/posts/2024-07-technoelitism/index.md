@@ -4,6 +4,7 @@ date: 2024-07-20T00:00:00-07:00
 slug: technoelitism
 aliases:
 - /posts/2024-technoelitism
+featured: 3
 ---
 
 While I was surfing some new [IndieWeb](https://indieweb.org) sites the other day, I had a little bit of a mad-at-the-young-people moment of being upset that so much of the modern web experience is algorithmic schlock that people just accept. I was contemplating writing a tongue-in-cheek "kids these days don't even know how to browse the internet" blog post (these [do exist](https://pj.bearblog.dev/a-rant-on-americas-youth/) and I think they're pointing out something valid that's separate from what's being discussed in this article), but I quickly realized that I didn't want to do that.

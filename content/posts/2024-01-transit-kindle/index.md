@@ -4,6 +4,7 @@ date: 2024-01-31T00:00:00-08:00
 tags: [project, rust, transit]
 description: "How I built a transit dashboard with Rust, Skia, and an old Kindle"
 slug: transit-kindle
+featured: 1
 ---
 
 I live in San Francisco, and I don't own a car. This means that I walk or take
