@@ -6,7 +6,20 @@
 
 			{{ if ne .Type "pages" }}
 			<div class="meta">Posted on {{ dateFormat "Jan 2, 2006" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT ({{.WordCount}} words)</span> {{ end }} {{partial "reading-time.html" .}} {{partial "open-heart.html" .}}</div>
-			<div class="meta"></div>
+			<div class="meta">
+				{{ if ne .Type "pages" }}
+				{{ if gt .Params.tags 0 }}
+				Tags
+				<nav class="nav lily-tags">
+   					<ul class="lily-tags">
+  						{{ range .Params.tags }}
+  						<li><a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}"># {{ . }}</a></li>
+  						{{ end }}
+   					</ul>
+				</nav>
+				{{ end }}
+				{{ end }}
+            </div>
 			{{end}}
 		</div>
 		{{ if isset .Params "tldr" }}
@@ -31,23 +44,25 @@
 			{{ .Content }}
 		</section>
 
-		<div class="post-tags">
-			{{ if ne .Type "pages" }}
-			{{ if gt .Params.tags 0 }}
-			<nav class="nav tags">
-				<ul class="tags">
-					{{ range .Params.tags }}
-					<li><a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a></li>
-					{{ end }}
-				</ul>
-			</nav>
-			{{ end }}
-			{{ end }}
-		</div>
 
 		{{ if ne .Type "pages" }}
 		<div class="open-heart-container">
 			{{partial "open-heart.html" .}}
+
+			<div class="meta">
+				{{ if ne .Type "pages" }}
+				{{ if gt .Params.tags 0 }}
+				Tags
+				<nav class="nav lily-tags">
+   					<ul class="lily-tags">
+  						{{ range .Params.tags }}
+  						<li><a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}"># {{ . }}</a></li>
+  						{{ end }}
+   					</ul>
+				</nav>
+				{{ end }}
+				{{ end }}
+			</div>
 		</div>
 
 		<div class="callout">

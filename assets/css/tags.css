@@ -1,0 +1,10 @@
+.lily-tags li {
+    list-style-type: none !important;
+    display: inline;
+    padding-right: 0.5em;
+}
+
+.lily-tags {
+    padding-left: 0;
+    display: inline;
+}

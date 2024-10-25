@@ -20,6 +20,7 @@ customcss = [
     "css/font.css",
     "css/list.css",
     "css/code.css",
+    "css/tags.css",
 ]
 mode = "light"
 favicon = "/favicon.png"
