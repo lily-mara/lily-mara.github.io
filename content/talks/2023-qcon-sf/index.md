@@ -1,10 +1,10 @@
 ---
 title: "Sleeping at Scale - QCon San Francisco"
 date: 2023-10-02T00:00:00-07:00
-tags: [talk]
 slug: qcon-sf
 aliases:
 - /posts/2023-qcon-sf
+- /posts/2023-10--qcon-sf
 ---
 
 I spoke at QCon San Francisco with my colleague [Hunter

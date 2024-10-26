@@ -1,10 +1,10 @@
 ---
 title: "How to Build a Reliable Kafka Data Processing Pipeline, Focusing on Contention, Uptime and Latency - QCon NYC"
 date: 2023-06-14T00:00:00-00:00
-tags: [talk]
 slug: qcon-nyc
 aliases:
 - /posts/2023-qcon-nyc
+- /posts/2023-06-qcon-nyc
 ---
 
 ![Photo of Lily speaking at QCon NYC](./speaking.jpg)
