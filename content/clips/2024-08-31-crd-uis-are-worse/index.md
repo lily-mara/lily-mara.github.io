@@ -4,7 +4,7 @@ date: 2024-08-31T09:48:20+02:00
 tags: [ui]
 ---
 
-The other day, I stumbled on this 2017 thread from the retro tech Youtuber CathodeRayDude. He complains about the state of modern (circa 2017) UIs and contrasts them with the keyboard-driven UIs of yesteryear. I don't think his point is that _everything_ is worse as a mouse-driven GUI, but that a lot of GUIs would be better designed in a different way.
+The other day, I stumbled on this 2017 thread from the retro tech Youtuber [CathodeRayDude](https://www.youtube.com/CathodeRayDude). He complains about the state of modern (circa 2017) UIs and contrasts them with the keyboard-driven UIs of yesteryear. I don't think his point is that _everything_ is worse as a mouse-driven GUI, but that a lot of GUIs would be better designed in a different way.
 
 I was particularly disappointed with the Google Photos UI when browsing the several-thousand pictures in the Redhead Days album after the event, looking for pictures of myself. Photos are sorted by date taken and there appears to be no way to sort them by date _uploaded_. This meant that every few days when I wanted to see if there were newly uploaded pictures that I hadn't seen, I either needed to scroll through every single picture again or use the painfully small "activity" panel on the right sidebar, which also includes every time someone likes/comments on a photo. Sorting a big list of files in a single directory by different criteria has been a standard feature of file/photo browsers for a very long time, and it's frustrating that UIs like this are regressing.
 
