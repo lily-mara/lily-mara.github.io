@@ -6,6 +6,8 @@ copyright = "© Lily Mara"
 enableRobotsTXT = true
 
 [params]
+customMeta = [{ name = "author", content = "Lily Mara" }]
+
 customcss = [
     "css/pink.css",
     "css/toc.css",
