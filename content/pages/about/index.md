@@ -7,7 +7,7 @@ menu:
     weight: 1
 ---
 
-Lily Mara (she/her) is a Software Developer based in San Francisco CA. She speaks domestically and internationally about Rust software development. She has been writing Rust since 2015, and using it as her primary professional language since 2019. She is the author of [Refactoring to Rust](https://www.manning.com/books/refactoring-to-rust?utm_source=mara&utm_medium=affiliate&utm_campaign=book_mara_refactoring_1_6_21&a_aid=mara&a_bid=eedce54d), a book on the gradual introduction of Rust code in existing software systems, available now from Manning. She is currently developing software and [writing about it](https://onesignal.com/blog/author/lily/) at [OneSignal](https://onesignal.com).
+Lily Mara (she/her) is a Software Developer based in San Francisco CA. She speaks domestically and internationally about Rust software development. She has been writing Rust since 2015, and using it as her primary professional language since 2019. She is the author of [Refactoring to Rust](https://www.manning.com/books/refactoring-to-rust?utm_source=mara&utm_medium=affiliate&utm_campaign=book_mara_refactoring_1_6_21&a_aid=mara&a_bid=eedce54d), a book on the gradual introduction of Rust code in existing software systems, available now from Manning.
 
 ![Photo of Lily](./lily.jpeg)
 
